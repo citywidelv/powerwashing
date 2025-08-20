@@ -426,6 +426,14 @@
             <div class="card">
                 <h3>Project Details</h3>
                 <div class="input-grid">
+                    <div class="input-group">
+                        <label for="clientName">Client Name/Company</label>
+                        <input type="text" id="clientName" placeholder="Enter client name or company" value="">
+                    </div>
+                    <div class="input-group">
+                        <label for="preparedBy">Prepared By</label>
+                        <input type="text" id="preparedBy" placeholder="Your name" value="">
+                    </div>
                     <div class="input-group full-width">
                         <label for="serviceType">Service Type</label>
                         <select id="serviceType" onchange="updateCalculations()">
@@ -441,6 +449,7 @@
                             <option value="government_facilities">Government Facilities - Compliance requirements</option>
                             <option value="schools_institutions">Schools/Institutions - Safety considerations</option>
                             <option value="property_management">Property Management Portfolio - Multiple locations</option>
+                            <option value="post_construction">Post-Construction Cleanup - Final clean before occupancy</option>
                         </select>
                     </div>
                     <div class="input-group">
@@ -713,9 +722,6 @@
                 <button class="export-btn vendor" onclick="exportVendorSpecs()">
                     Export Vendor Specifications
                 </button>
-                <button class="export-btn client" onclick="exportClientInstructions()">
-                    Export Client Instructions
-                </button>
                 <button class="export-btn fsm" onclick="exportFSMSummary()">
                     Export FSM Job Summary
                 </button>
@@ -769,6 +775,10 @@
             },
             property_management: {
                 portfolio_service: { good: 1100, fair: 900, poor: 700, very_poor: 500 }
+            },
+            post_construction: {
+                final_clean: { good: 500, fair: 400, poor: 300, very_poor: 200 },
+                heavy_debris: { good: 350, fair: 280, poor: 220, very_poor: 150 }
             }
         };
 
@@ -966,6 +976,8 @@
                 method = 'safe_cleaning';
             } else if (serviceType === 'property_management') {
                 method = 'portfolio_service';
+            } else if (serviceType === 'post_construction') {
+                method = condition === 'very_poor' || condition === 'poor' ? 'heavy_debris' : 'final_clean';
             }
             
             return rates[method] ? rates[method][condition] : rates[Object.keys(rates)[0]][condition] || 800;
@@ -1120,7 +1132,8 @@
                 shopping_centers: 'Shopping Centers',
                 government_facilities: 'Government Facilities',
                 schools_institutions: 'Schools/Institutions',
-                property_management: 'Property Management Portfolio'
+                property_management: 'Property Management Portfolio',
+                post_construction: 'Post-Construction Cleanup'
             };
             return displayNames[serviceType] || serviceType.replace('_', ' ');
         }
@@ -1173,18 +1186,288 @@
         }
 
         function exportVendorSpecs() {
-            // RTF format content for vendor specifications
-            alert('Vendor Specifications RTF export functionality would be implemented here');
-        }
+            const clientName = document.getElementById('clientName').value || 'Not Specified';
+            const preparedBy = document.getElementById('preparedBy').value || 'Not Specified';
+            const serviceType = document.getElementById('serviceTypeDisplay').textContent;
+            const totalArea = document.getElementById('totalArea').value;
+            const linearFeet = document.getElementById('linearFeet').value;
+            const condition = document.getElementById('conditionDisplay').textContent;
+            const totalHours = document.getElementById('totalLaborHours').textContent;
+            const crewSize = document.getElementById('crewSizeDisplay').textContent;
+            const specialReqs = document.getElementById('specialReqs').textContent;
+            const wasteHandling = document.getElementById('wasteHandling').textContent;
+            const estimatedDuration = document.getElementById('estimatedDuration').textContent;
+            
+            const rtfContent = `{\\rtf1\\ansi\\deff0 {\\fonttbl {\\f0 Times New Roman;}}
+{\\colortbl;\\red0\\green0\\blue0;\\red0\\green0\\blue255;\\red255\\green0\\blue0;}
+\\f0\\fs24
+{\\pard\\b\\fs32 VENDOR SPECIFICATIONS - PRESSURE WASHING SERVICE\\par}
+\\par
+{\\pard\\b Prepared For:\\b0  ${clientName}\\par}
+{\\pard\\b Prepared By:\\b0  ${preparedBy}\\par}
+{\\pard\\b Date Generated:\\b0  ${new Date().toLocaleString()}\\par}
+\\par
+{\\pard\\cf2\\b\\fs28 PROJECT SCOPE\\cf0\\par}
+\\par
+{\\pard\\b Service Type:\\b0  ${serviceType}\\par}
+{\\pard\\b Total Area:\\b0  ${totalArea} square feet\\par}
+${linearFeet > 0 ? `{\\pard\\b Linear Feet:\\b0  ${linearFeet} feet\\par}` : ''}
+{\\pard\\b Surface Condition:\\b0  ${condition}\\par}
+{\\pard\\b Estimated Duration:\\b0  ${estimatedDuration} hours\\par}
+\\par
+{\\pard\\cf2\\b\\fs28 LABOR REQUIREMENTS\\cf0\\par}
+\\par
+{\\pard\\b Total Labor Hours:\\b0  ${totalHours} hours\\par}
+{\\pard\\b Recommended Crew Size:\\b0  ${crewSize} technicians\\par}
+{\\pard\\b Experience Level Required:\\b0  Commercial pressure washing certification preferred\\par}
+\\par
+{\\pard\\cf2\\b\\fs28 EQUIPMENT REQUIREMENTS\\cf0\\par}
+\\par
+{\\pard\\b Primary Equipment:\\par}
+- Commercial pressure washer (minimum 3000 PSI, 4 GPM)\\par
+- Surface cleaner (20-24 inch for efficiency)\\par
+- Extension wands and appropriate nozzles\\par
+- Safety equipment (PPE, cones, signage)\\par}
+${document.getElementById('hotWater').checked ? '{\\pard - Hot water unit required (140-180 degrees F)\\par}' : ''}
+${document.getElementById('wasteRecovery').checked ? '{\\pard - Wastewater recovery system with vacuum\\par}' : ''}
+${document.getElementById('softWash').checked ? '{\\pard - Soft wash system with low-pressure applicator\\par}' : ''}
+\\par
+{\\pard\\cf2\\b\\fs28 MATERIAL REQUIREMENTS\\cf0\\par}
+\\par
+{\\pard\\b Cleaning Chemicals:\\par}
+- Commercial-grade detergent/degreaser\\par
+- Appropriate dilution ratios for surface type\\par}
+${document.getElementById('chemicalStripping').checked ? '- Heavy-duty stripping agent\\par' : ''}
+{\\pard\\b Estimated Chemical Usage:\\b0  ${(parseFloat(totalArea) / 500).toFixed(1)} gallons\\par}
+\\par
+{\\pard\\cf2\\b\\fs28 SPECIAL REQUIREMENTS\\cf0\\par}
+\\par
+{\\pard\\b Special Services:\\b0  ${specialReqs}\\par}
+{\\pard\\b Wastewater Handling:\\b0  ${wasteHandling}\\par}
+\\par
+{\\pard\\cf2\\b\\fs28 NEVADA COMPLIANCE REQUIREMENTS\\cf0\\par}
+\\par
+{\\pard - Must comply with Nevada water discharge regulations\\par
+- Cannot discharge to storm drains without NPDES permit\\par
+- Wastewater must be contained and properly disposed\\par
+- Follow all local environmental protection guidelines\\par}
+\\par
+{\\pard\\cf2\\b\\fs28 QUALITY STANDARDS\\cf0\\par}
+\\par
+{\\pard - All surfaces must be uniformly cleaned\\par
+- No damage to landscaping or property\\par
+- Complete removal of dirt, mold, mildew, and stains\\par
+- Final inspection required before completion\\par
+- Photo documentation of before/after conditions\\par}
+\\par
+{\\pard\\cf2\\b\\fs28 SAFETY REQUIREMENTS\\cf0\\par}
+\\par
+{\\pard - Valid liability insurance required (minimum $1M)\\par
+- Workers compensation coverage\\par
+- OSHA compliance for all crew members\\par
+- Proper PPE usage at all times\\par
+- Traffic control measures when applicable\\par}
+\\par
+{\\pard\\b\\fs24 Note: This specification is for vendor use only. Do not share pricing information.\\par}
+{\\pard\\fs20 Document prepared by ${preparedBy} for ${clientName}\\par}
+}`;
 
-        function exportClientInstructions() {
-            // RTF format content for client instructions
-            alert('Client Instructions RTF export functionality would be implemented here');
+            downloadRTF(rtfContent, 'vendor-specifications.rtf');
         }
 
         function exportFSMSummary() {
-            // RTF format content for FSM job summary
-            alert('FSM Job Summary RTF export functionality would be implemented here');
+            // Gather all data
+            const clientName = document.getElementById('clientName').value || 'Not Specified';
+            const preparedBy = document.getElementById('preparedBy').value || 'Not Specified';
+            const serviceType = document.getElementById('serviceTypeDisplay').textContent;
+            const totalArea = document.getElementById('totalArea').value;
+            const linearFeet = document.getElementById('linearFeet').value;
+            const condition = document.getElementById('conditionDisplay').textContent;
+            const totalHours = document.getElementById('totalLaborHours').textContent;
+            const crewSize = document.getElementById('crewSizeDisplay').textContent;
+            const laborCost = document.getElementById('laborCost').textContent;
+            const equipmentCost = document.getElementById('equipmentCost').textContent;
+            const materialCost = document.getElementById('materialCost').textContent;
+            const totalCostToCW = document.getElementById('totalCostToCW').textContent;
+            const finalClientPrice = document.getElementById('finalClientPrice').textContent;
+            const cwGrossProfit = document.getElementById('cwGrossProfit').textContent;
+            const pricePerSqFt = document.getElementById('pricePerSqFt').textContent;
+            const marginPercent = document.getElementById('marginPercent').textContent;
+            const contractType = document.getElementById('contractTypeDisplay').textContent;
+            const specialReqs = document.getElementById('specialReqs').textContent;
+            const wasteHandling = document.getElementById('wasteHandling').textContent;
+            const accessDisplay = document.getElementById('accessDisplay').textContent;
+            const pmMarkup = document.getElementById('pmMarkupDisplay').textContent;
+            
+            // Calculate vendor payment
+            const clientPriceNum = parseFloat(finalClientPrice.replace(/[^0-9.-]+/g,""));
+            const cwProfitNum = parseFloat(cwGrossProfit.replace(/[^0-9.-]+/g,""));
+            const vendorPayment = clientPriceNum - cwProfitNum;
+            
+            const rtfContent = `{\\rtf1\\ansi\\deff0 {\\fonttbl {\\f0 Times New Roman;}}
+{\\colortbl;\\red0\\green0\\blue0;\\red0\\green0\\blue255;\\red255\\green0\\blue0;\\red0\\green128\\blue0;}
+\\f0\\fs24
+{\\pard\\b\\fs36\\qc FACILITY SOLUTIONS MANAGER - COMPLETE JOB SUMMARY\\par}
+{\\pard\\b\\fs28\\qc COMMERCIAL PRESSURE WASHING SERVICE\\par}
+\\par
+{\\pard\\b Prepared For:\\b0  ${clientName}\\par}
+{\\pard\\b Prepared By:\\b0  ${preparedBy}\\par}
+{\\pard\\b Date Generated:\\b0  ${new Date().toLocaleString()}\\par}
+{\\pard Location: Nevada\\par}
+\\par
+{\\pard\\cf2\\b\\fs28 JOB OVERVIEW\\cf0\\par}
+\\par
+{\\pard\\b Client:\\b0  ${clientName}\\par}
+{\\pard\\b Service Type:\\b0  ${serviceType}\\par}
+{\\pard\\b Contract Type:\\b0  ${contractType}\\par}
+{\\pard\\b Total Area:\\b0  ${totalArea} square feet\\par}
+${linearFeet > 0 ? `{\\pard\\b Linear Feet:\\b0  ${linearFeet} feet\\par}` : ''}
+{\\pard\\b Surface Condition:\\b0  ${condition}\\par}
+{\\pard\\b Access Difficulty:\\b0  ${accessDisplay}\\par}
+{\\pard\\b Labor Hours Required:\\b0  ${totalHours} hours\\par}
+{\\pard\\b Recommended Crew Size:\\b0  ${crewSize} technicians\\par}
+{\\pard\\b Special Requirements:\\b0  ${specialReqs}\\par}
+\\par
+{\\pard\\cf3\\b\\fs28 PRICING SUMMARY\\cf0\\par}
+\\par
+{\\pard\\cf3\\b\\fs26 Final Client Price: ${finalClientPrice}\\cf0\\par}
+{\\pard\\b Total Vendor Payment:\\b0  ${formatCurrency(vendorPayment)}\\par}
+{\\pard\\cf4\\b City Wide Gross Profit:\\b0  ${cwGrossProfit}\\cf0\\par}
+{\\pard\\b City Wide Margin:\\b0  ${marginPercent}\\par}
+{\\pard\\b Price Per Square Foot:\\b0  ${pricePerSqFt}\\par}
+${pmMarkup !== '0%' ? `{\\pard\\b Property Manager Markup:\\b0  ${pmMarkup}\\par}` : ''}
+\\par
+{\\pard\\cf2\\b\\fs28 VENDOR PAYMENT STRUCTURE\\cf0\\par}
+\\par
+{\\pard\\b Cost Provider Selections:\\par}
+- Labor: ${providerSettings.labor === 'vendor' ? 'Vendor Provided' : 'In-House'}\\par
+- Equipment: ${providerSettings.equipment === 'vendor' ? 'Vendor Provided' : 'In-House'}\\par
+- Chemicals: ${providerSettings.chemicals === 'vendor' ? 'Vendor Provided' : 'In-House'}\\par
+- Recovery System: ${providerSettings.recovery === 'vendor' ? 'Vendor Provided' : 'In-House'}\\par
+- Supplies: ${providerSettings.supplies === 'vendor' ? 'Vendor Provided' : 'In-House'}\\par}
+\\par
+{\\pard\\b Component Costs (to City Wide):\\par}
+- Labor Cost: ${laborCost}\\par
+- Equipment Cost: ${equipmentCost}\\par
+- Material Cost: ${materialCost}\\par
+- Total Cost to CW: ${totalCostToCW}\\par}
+\\par
+{\\pard\\cf2\\b\\fs28 SITE CONDITIONS & CHALLENGES\\cf0\\par}
+\\par
+{\\pard\\b Condition Assessment:\\b0  ${condition}\\par}
+{\\pard\\b Access Factors:\\b0  ${accessDisplay}\\par}
+{\\pard\\b Wastewater Requirements:\\b0  ${wasteHandling}\\par}
+${document.getElementById('afterHours').checked ? '{\\pard\\b Schedule Constraint:\\b0  After hours service required\\par}' : ''}
+${document.getElementById('tenantOccupied').checked ? '{\\pard\\b Occupancy Status:\\b0  Tenant-occupied - extra care required\\par}' : ''}
+${document.getElementById('emergencyService').checked ? '{\\pard\\b Service Priority:\\b0  EMERGENCY/RUSH SERVICE\\par}' : ''}
+\\par
+{\\pard\\cf2\\b\\fs28 VENDOR QUALIFICATION QUESTIONS\\cf0\\par}
+\\par
+{\\pard 1. Do you have commercial pressure washing experience in Nevada?\\par
+2. Can you provide proof of liability insurance (minimum $1M)?\\par
+3. Do you have wastewater recovery equipment available?\\par
+4. Are your technicians trained in OSHA safety standards?\\par
+5. Can you provide references from similar commercial projects?\\par
+6. Do you have hot water pressure washing capability?\\par
+7. Are you familiar with Nevada environmental discharge regulations?\\par}
+\\par
+{\\pard\\cf2\\b\\fs28 CLIENT COMMUNICATION POINTS\\cf0\\par}
+\\par
+{\\pard\\b Pre-Service Requirements:\\par}
+- Notify tenants/occupants 24-48 hours in advance\\par
+- Ensure all windows and doors are closed\\par
+- Remove or protect sensitive outdoor items\\par
+- Provide access to water source and electrical outlets\\par
+- Clear vehicles from service areas\\par}
+\\par
+{\\pard\\b Service Process Expectations:\\par}
+- Professional crew will arrive in marked vehicles\\par
+- Safety cones and signage will be placed\\par
+- Service duration approximately ${totalHours} hours\\par
+- Wastewater will be properly contained and disposed\\par
+- Final walkthrough with property representative\\par}
+\\par
+{\\pard\\b Post-Service Care:\\par}
+- Allow surfaces to dry completely (2-4 hours)\\par
+- Inspect work and report any concerns immediately\\par
+- Schedule follow-up services for optimal maintenance\\par}
+\\par
+{\\pard\\cf2\\b\\fs28 SCHEDULING CONSIDERATIONS\\cf0\\par}
+\\par
+{\\pard\\b Optimal Timing:\\par}
+- Best performed in dry weather conditions\\par
+- Avoid freezing temperatures (below 40 degrees F)\\par
+- Morning service minimizes tenant disruption\\par
+- Allow 24 hours drying time before heavy use\\par}
+\\par
+{\\pard\\b Weather Dependencies:\\par}
+- Cannot perform in rain or high winds\\par
+- Extreme heat may affect chemical effectiveness\\par
+- Reschedule if weather conditions unsafe\\par}
+\\par
+{\\pard\\cf2\\b\\fs28 QUALITY ASSURANCE CHECKLIST\\cf0\\par}
+\\par
+{\\pard Before Service:\\par
+[ ] Vendor insurance verified\\par
+[ ] Site access confirmed\\par
+[ ] Tenant notifications sent\\par
+[ ] Water/power sources identified\\par
+[ ] Wastewater disposal plan confirmed\\par}
+\\par
+{\\pard During Service:\\par
+[ ] Safety measures in place\\par
+[ ] Proper chemical dilution verified\\par
+[ ] Uniform cleaning coverage\\par
+[ ] No property damage\\par
+[ ] Wastewater properly contained\\par}
+\\par
+{\\pard After Service:\\par
+[ ] All areas cleaned to standard\\par
+[ ] Photos documented (before/after)\\par
+[ ] Client walkthrough completed\\par
+[ ] Invoice matches quoted price\\par
+[ ] Follow-up service scheduled (if applicable)\\par}
+\\par
+{\\pard\\cf2\\b\\fs28 PROFITABILITY ANALYSIS\\cf0\\par}
+\\par
+{\\pard\\cf3\\b Revenue Breakdown:\\cf0\\par
+Client (${clientName}) Pays: ${finalClientPrice}\\par
+Vendor Receives: ${formatCurrency(vendorPayment)}\\par
+\\cf4\\b City Wide Profit: ${cwGrossProfit}\\cf0\\par}
+\\par
+{\\pard\\b Efficiency Targets:\\par
+- Complete within ${totalHours} hours\\par
+- Minimize chemical usage through proper dilution\\par
+- Optimize crew size for productivity\\par
+- Reduce callbacks through quality work\\par}
+\\par
+{\\pard\\b Key Cost Drivers:\\par
+- Surface condition (${condition})\\par
+- Access difficulty (${accessDisplay})\\par
+- Special requirements (${specialReqs})\\par
+- Contract frequency discounts applied\\par}
+\\par
+{\\pard\\b\\fs24 This document contains confidential pricing information. For internal FSM use only.\\par}
+{\\pard\\fs20 Prepared by ${preparedBy} for ${clientName} on ${new Date().toLocaleDateString()}\\par}
+}`;
+
+            downloadRTF(rtfContent, 'fsm-job-summary.rtf');
+        }
+
+        function downloadRTF(content, filename) {
+            const blob = new Blob([content], { type: 'application/rtf' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);
+        }
+
+        function exportClientInstructions() {
+            // Removed - not needed per user request
         }
 
         // Initialize calculator
