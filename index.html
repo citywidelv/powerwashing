@@ -374,8 +374,8 @@
 </head>
 <body>
     <div class="header">
-        <h1>Nevada Power/Pressure Washing Calculator</h1>
-        <p>Professional Pricing for Northern & Southern Nevada - City Wide Facility Solutions</p>
+        <h1>Nevada Commercial Pressure Washing Calculator</h1>
+        <p>Professional Pricing for Property Management & Commercial Clients - City Wide Facility Solutions</p>
     </div>
 
     <div class="container">
@@ -429,16 +429,18 @@
                     <div class="input-group full-width">
                         <label for="serviceType">Service Type</label>
                         <select id="serviceType" onchange="updateCalculations()">
-                            <option value="horizontal_concrete">Horizontal Concrete - Driveways, sidewalks, patios</option>
-                            <option value="vertical_surfaces">Vertical Surfaces - Walls, siding, stucco</option>
-                            <option value="building_exterior">Building Exterior - Complete house/commercial wash</option>
-                            <option value="parking_lots">Parking Lots & Garages - Large concrete areas</option>
-                            <option value="fleet_vehicles">Fleet Vehicle Washing - Mobile service</option>
-                            <option value="graffiti_removal">Graffiti Removal - Specialized cleaning</option>
-                            <option value="deck_fencing">Deck & Fencing - Wood/composite surfaces</option>
-                            <option value="roof_cleaning">Roof Cleaning - Soft wash/low pressure</option>
-                            <option value="post_construction">Post-Construction - New construction cleanup</option>
-                            <option value="restaurant_hoods">Restaurant Hood Cleaning - Kitchen exhaust</option>
+                            <option value="office_buildings">Office Buildings - Exterior walls, entryways</option>
+                            <option value="retail_centers">Retail Centers - Storefronts, sidewalks, parking</option>
+                            <option value="apartment_complex">Apartment Complex - Buildings, breezeways, pool areas</option>
+                            <option value="warehouse_industrial">Warehouse/Industrial - Large concrete surfaces</option>
+                            <option value="medical_facilities">Medical Facilities - Specialized cleaning requirements</option>
+                            <option value="restaurants">Restaurants - Drive-thrus, dumpster pads, grease removal</option>
+                            <option value="hotels_hospitality">Hotels/Hospitality - High-visibility areas</option>
+                            <option value="parking_structures">Parking Structures - Multi-level, confined spaces</option>
+                            <option value="shopping_centers">Shopping Centers - Large scale, mixed surfaces</option>
+                            <option value="government_facilities">Government Facilities - Compliance requirements</option>
+                            <option value="schools_institutions">Schools/Institutions - Safety considerations</option>
+                            <option value="property_management">Property Management Portfolio - Multiple locations</option>
                         </select>
                     </div>
                     <div class="input-group">
@@ -462,10 +464,24 @@
                         <label for="accessDifficulty">Access Difficulty</label>
                         <select id="accessDifficulty" onchange="updateCalculations()">
                             <option value="1.0">Easy - Ground level, open access</option>
-                            <option value="1.15">Moderate - Some obstacles, equipment setup</option>
-                            <option value="1.3">Difficult - Height access, tight spaces</option>
-                            <option value="1.5">Very Difficult - Multiple stories, complex setup</option>
+                            <option value="1.15">Moderate - Some obstacles, limited access</option>
+                            <option value="1.3">Difficult - Multiple levels, tight spaces</option>
+                            <option value="1.5">Very Difficult - Extreme heights, complex access</option>
                         </select>
+                    </div>
+                    <div class="input-group">
+                        <label for="contractType">Contract Type</label>
+                        <select id="contractType" onchange="updateCalculations()">
+                            <option value="1.0">One-Time Service</option>
+                            <option value="0.85">Monthly Maintenance (-15%)</option>
+                            <option value="0.90">Quarterly Maintenance (-10%)</option>
+                            <option value="0.95">Bi-Annual Maintenance (-5%)</option>
+                            <option value="0.98">Annual Maintenance (-2%)</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <label for="propertyManagerMarkup">Property Manager Markup (%)</label>
+                        <input type="number" id="propertyManagerMarkup" value="15" step="5" onchange="updateCalculations()">
                     </div>
                 </div>
 
@@ -484,10 +500,6 @@
                         <label for="chemicalStripping">Chemical Stripping/Degreasing</label>
                     </div>
                     <div class="checkbox-item">
-                        <input type="checkbox" id="highPressure" onchange="updateCalculations()">
-                        <label for="highPressure">High Pressure (3000+ PSI)</label>
-                    </div>
-                    <div class="checkbox-item">
                         <input type="checkbox" id="softWash" onchange="updateCalculations()">
                         <label for="softWash">Soft Wash (Delicate surfaces)</label>
                     </div>
@@ -497,7 +509,19 @@
                     </div>
                     <div class="checkbox-item">
                         <input type="checkbox" id="afterHours" onchange="updateCalculations()">
-                        <label for="afterHours">After Hours/Weekend (+25%)</label>
+                        <label for="afterHours">After Hours/Weekend Service</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="highVolume" onchange="updateCalculations()">
+                        <label for="highVolume">Large Volume Project (10,000+ sq ft)</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="emergencyService" onchange="updateCalculations()">
+                        <label for="emergencyService">Emergency/Rush Service (+50%)</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="tenantOccupied" onchange="updateCalculations()">
+                        <label for="tenantOccupied">Tenant-Occupied Building (Extra care)</label>
                     </div>
                 </div>
             </div>
@@ -515,19 +539,19 @@
                     <h4>Independent Contractor Rate Breakdown</h4>
                     <div class="input-group">
                         <label for="rawLaborRate">Raw Labor Rate ($/hour)</label>
-                        <input type="number" id="rawLaborRate" value="16.50" step="0.25" onchange="updateICBreakdown()">
+                        <input type="number" id="rawLaborRate" value="17.00" step="0.25" onchange="updateICBreakdown()">
                     </div>
                     <div class="breakdown-grid">
                         <span>FICA (7.65%):</span>
-                        <span id="ficaAmount">$1.38</span>
+                        <span id="ficaAmount">$1.30</span>
                     </div>
                     <div class="breakdown-grid">
                         <span>FUTA (0.60%):</span>
-                        <span id="futaAmount">$0.11</span>
+                        <span id="futaAmount">$0.10</span>
                     </div>
                     <div class="breakdown-grid">
                         <span>Work Comp (2.50%):</span>
-                        <span id="workCompAmount">$0.45</span>
+                        <span id="workCompAmount">$0.43</span>
                     </div>
                     <div class="breakdown-grid">
                         <span>General Liability (0.50%):</span>
@@ -543,7 +567,7 @@
                     </div>
                     <div class="breakdown-grid breakdown-total">
                         <span>Sub Total:</span>
-                        <span id="subTotal">$20.03</span>
+                        <span id="subTotal">$18.92</span>
                     </div>
                     <div class="breakdown-grid">
                         <span>IC Profit & OH (%):</span>
@@ -551,7 +575,7 @@
                     </div>
                     <div class="breakdown-grid breakdown-total">
                         <span><strong>IC Loaded Rate:</strong></span>
-                        <span id="icLoadedRate"><strong>$22.03</strong></span>
+                        <span id="icLoadedRate"><strong>$20.81</strong></span>
                     </div>
                 </div>
 
@@ -639,7 +663,7 @@
                         <p><strong>Setup/Cleanup:</strong> <span id="setupTime">0.5</span> hours</p>
                         <p><strong>Crew Size:</strong> <span id="crewSizeDisplay">2</span> people</p>
                         <p><strong>Total Crew Hours:</strong> <span id="totalCrewHours">0.0</span> hours</p>
-                        <p><strong>Hourly Rate:</strong> <span id="hourlyRateDisplay">$22.03</span></p>
+                        <p><strong>Hourly Rate:</strong> <span id="hourlyRateDisplay">$20.81</span></p>
                     </div>
                 </div>
                 <div class="card">
@@ -665,14 +689,17 @@
                     </div>
                 </div>
                 <div class="card">
-                    <h3>Service Specifications</h3>
-                    <div id="serviceSpecs">
-                        <p><strong>Service Type:</strong> <span id="serviceTypeDisplay">Horizontal Concrete</span></p>
+                    <h3>Commercial Contract Details</h3>
+                    <div id="contractBreakdown">
+                        <p><strong>Service Type:</strong> <span id="serviceTypeDisplay">Office Buildings</span></p>
+                        <p><strong>Contract Type:</strong> <span id="contractTypeDisplay">One-Time Service</span></p>
+                        <p><strong>Frequency Discount:</strong> <span id="frequencyDiscount">No Discount</span></p>
+                        <p><strong>Property Manager Markup:</strong> <span id="pmMarkupDisplay">15%</span></p>
                         <p><strong>Surface Condition:</strong> <span id="conditionDisplay">Good</span></p>
                         <p><strong>Access Difficulty:</strong> <span id="accessDisplay">Easy</span></p>
-                        <p><strong>Special Requirements:</strong> <span id="specialReqs">None</span></p>
-                        <p><strong>Wastewater Handling:</strong> <span id="wasteHandling">Recovery Required</span></p>
                         <p><strong>Estimated Duration:</strong> <span id="estimatedDuration">0.0</span> hours</p>
+                        <p><strong>Special Requirements:</strong> <span id="specialReqs">Standard Service</span></p>
+                        <p><strong>Wastewater Handling:</strong> <span id="wasteHandling">Recovery Required</span></p>
                     </div>
                 </div>
             </div>
@@ -697,40 +724,51 @@
     </div>
 
     <script>
-        // Production rates based on Nevada market research (sq ft per hour)
+        // Commercial property production rates based on Nevada market research (sq ft per hour)
         const productionRates = {
-            horizontal_concrete: {
-                wand_cold: { good: 750, fair: 600, poor: 450, very_poor: 350 },
-                surface_cleaner_hot: { good: 1200, fair: 950, poor: 750, very_poor: 550 }
+            office_buildings: {
+                exterior_wash: { good: 1000, fair: 800, poor: 600, very_poor: 450 },
+                concrete_surfaces: { good: 1200, fair: 950, poor: 750, very_poor: 550 }
             },
-            vertical_surfaces: {
-                wand_cold: { good: 500, fair: 400, poor: 300, very_poor: 200 },
-                soft_wash: { good: 900, fair: 700, poor: 500, very_poor: 350 }
+            retail_centers: {
+                storefronts: { good: 800, fair: 650, poor: 500, very_poor: 350 },
+                parking_areas: { good: 1400, fair: 1100, poor: 850, very_poor: 650 }
             },
-            building_exterior: {
-                house_wash: { good: 1400, fair: 1100, poor: 800, very_poor: 600 },
-                commercial: { good: 900, fair: 700, poor: 500, very_poor: 350 }
+            apartment_complex: {
+                building_wash: { good: 900, fair: 700, poor: 550, very_poor: 400 },
+                common_areas: { good: 1100, fair: 850, poor: 650, very_poor: 500 }
             },
-            parking_lots: {
-                surface_cleaner: { good: 1500, fair: 1200, poor: 900, very_poor: 700 }
+            warehouse_industrial: {
+                large_surfaces: { good: 1600, fair: 1300, poor: 1000, very_poor: 750 },
+                detailed_areas: { good: 800, fair: 650, poor: 500, very_poor: 350 }
             },
-            fleet_vehicles: {
-                standard: { good: 3, fair: 2.5, poor: 2, very_poor: 1.5 } // vehicles per hour
+            medical_facilities: {
+                specialized_cleaning: { good: 600, fair: 500, poor: 400, very_poor: 300 }
             },
-            graffiti_removal: {
-                chemical_strip: { good: 150, fair: 120, poor: 80, very_poor: 50 }
+            restaurants: {
+                drive_thru: { good: 400, fair: 350, poor: 300, very_poor: 250 },
+                dumpster_pads: { good: 200, fair: 180, poor: 150, very_poor: 120 }
             },
-            deck_fencing: {
-                wood_surfaces: { good: 700, fair: 550, poor: 400, very_poor: 300 }
+            hotels_hospitality: {
+                entrance_areas: { good: 700, fair: 550, poor: 450, very_poor: 350 },
+                pool_areas: { good: 500, fair: 400, poor: 350, very_poor: 250 }
             },
-            roof_cleaning: {
-                soft_wash: { good: 900, fair: 700, poor: 500, very_poor: 350 }
+            parking_structures: {
+                concrete_cleaning: { good: 1200, fair: 950, poor: 750, very_poor: 550 },
+                multi_level: { good: 800, fair: 650, poor: 500, very_poor: 400 }
             },
-            post_construction: {
-                new_concrete: { good: 1000, fair: 800, poor: 600, very_poor: 400 }
+            shopping_centers: {
+                mixed_surfaces: { good: 1000, fair: 800, poor: 600, very_poor: 450 },
+                high_traffic: { good: 800, fair: 650, poor: 500, very_poor: 350 }
             },
-            restaurant_hoods: {
-                hood_cleaning: { good: 75, fair: 60, poor: 45, very_poor: 30 } // linear feet per hour
+            government_facilities: {
+                compliance_cleaning: { good: 700, fair: 550, poor: 450, very_poor: 350 }
+            },
+            schools_institutions: {
+                safe_cleaning: { good: 800, fair: 650, poor: 500, very_poor: 400 }
+            },
+            property_management: {
+                portfolio_service: { good: 1100, fair: 900, poor: 700, very_poor: 500 }
             }
         };
 
@@ -751,10 +789,13 @@
             event.target.classList.add('active');
             
             // Update labor rates based on region
-            if (region === 'southern') {
-                document.getElementById('rawLaborRate').value = '17.00';
-            } else {
-                document.getElementById('rawLaborRate').value = '16.00';
+            const rawLaborRateElement = document.getElementById('rawLaborRate');
+            if (rawLaborRateElement) {
+                if (region === 'southern') {
+                    rawLaborRateElement.value = '17.00';
+                } else {
+                    rawLaborRateElement.value = '16.00';
+                }
             }
             
             updateICBreakdown();
@@ -765,19 +806,26 @@
             providerSettings[category] = provider;
             
             // Update button states
-            const buttons = document.querySelectorAll(`[data-category="${category}"]`);
+            const buttons = document.querySelectorAll(`[data-category="${category}"] button`);
             buttons.forEach(btn => btn.classList.remove('active'));
             
-            const activeBtn = document.querySelector(`[data-category="${category}"].${provider}-btn`);
-            activeBtn.classList.add('active');
+            if (provider === 'vendor') {
+                document.querySelector(`[data-category="${category}"].vendor-btn`).classList.add('active');
+            } else {
+                document.querySelector(`[data-category="${category}"].inhouse-btn`).classList.add('active');
+            }
             
             updateCalculations();
         }
 
         function updateICBreakdown() {
-            const rawRate = parseFloat(document.getElementById('rawLaborRate').value) || 18.00;
-            const stateTax = parseFloat(document.getElementById('stateTaxRate').value) || 0.00;
-            const icProfitRate = parseFloat(document.getElementById('icProfitRate').value) || 10.0;
+            const rawLaborRateElement = document.getElementById('rawLaborRate');
+            const stateTaxRateElement = document.getElementById('stateTaxRate');
+            const icProfitRateElement = document.getElementById('icProfitRate');
+            
+            const rawRate = rawLaborRateElement ? parseFloat(rawLaborRateElement.value) || 17.00 : 17.00;
+            const stateTax = stateTaxRateElement ? parseFloat(stateTaxRateElement.value) || 0.00 : 0.00;
+            const icProfitRate = icProfitRateElement ? parseFloat(icProfitRateElement.value) || 10.0 : 10.0;
             
             const fica = rawRate * 0.0765;
             const futa = rawRate * 0.0060;
@@ -789,13 +837,21 @@
             const icProfitAmount = subTotal * (icProfitRate / 100);
             const icLoadedRate = subTotal + icProfitAmount;
             
-            document.getElementById('ficaAmount').textContent = formatCurrencyDetailed(fica);
-            document.getElementById('futaAmount').textContent = formatCurrencyDetailed(futa);
-            document.getElementById('workCompAmount').textContent = formatCurrencyDetailed(workComp);
-            document.getElementById('glAmount').textContent = formatCurrencyDetailed(gl);
-            document.getElementById('stateTaxAmount').textContent = formatCurrencyDetailed(stateTaxAmount);
-            document.getElementById('subTotal').textContent = formatCurrencyDetailed(subTotal);
-            document.getElementById('icLoadedRate').textContent = formatCurrencyDetailed(icLoadedRate);
+            const ficaAmountElement = document.getElementById('ficaAmount');
+            const futaAmountElement = document.getElementById('futaAmount');
+            const workCompAmountElement = document.getElementById('workCompAmount');
+            const glAmountElement = document.getElementById('glAmount');
+            const stateTaxAmountElement = document.getElementById('stateTaxAmount');
+            const subTotalElement = document.getElementById('subTotal');
+            const icLoadedRateElement = document.getElementById('icLoadedRate');
+            
+            if (ficaAmountElement) ficaAmountElement.textContent = formatCurrencyDetailed(fica);
+            if (futaAmountElement) futaAmountElement.textContent = formatCurrencyDetailed(futa);
+            if (workCompAmountElement) workCompAmountElement.textContent = formatCurrencyDetailed(workComp);
+            if (glAmountElement) glAmountElement.textContent = formatCurrencyDetailed(gl);
+            if (stateTaxAmountElement) stateTaxAmountElement.textContent = formatCurrencyDetailed(stateTaxAmount);
+            if (subTotalElement) subTotalElement.textContent = formatCurrencyDetailed(subTotal);
+            if (icLoadedRateElement) icLoadedRateElement.innerHTML = `<strong>${formatCurrencyDetailed(icLoadedRate)}</strong>`;
             
             updateCalculations();
         }
@@ -805,83 +861,124 @@
             const totalArea = parseFloat(document.getElementById('totalArea').value) || 0;
             const linearFeet = parseFloat(document.getElementById('linearFeet').value) || 0;
             const condition = document.getElementById('surfaceCondition').value;
-            const accessDifficulty = parseFloat(document.getElementById('accessDifficulty').value);
+            const accessDifficulty = parseFloat(document.getElementById('accessDifficulty').value) || 1.0;
+            const contractType = parseFloat(document.getElementById('contractType').value) || 1.0;
             const crewSize = parseInt(document.getElementById('crewSize').value);
             const equipmentRate = parseFloat(document.getElementById('equipmentRate').value);
             const chemicalCost = parseFloat(document.getElementById('chemicalCost').value);
             const cityWideMargin = parseFloat(document.getElementById('cityWideMargin').value) / 100;
             
+            // Property manager markup
+            const pmMarkupElement = document.getElementById('propertyManagerMarkup');
+            const propertyManagerMarkup = pmMarkupElement ? parseFloat(pmMarkupElement.value) / 100 : 0.15;
+            
             // Calculate production rate
             let baseRate = getProductionRate(serviceType, condition);
-            let effectiveArea = Math.max(totalArea, linearFeet);
+            let effectiveArea = Math.max(totalArea, linearFeet * 10); // Convert linear feet to approximate sq ft
             
-            // Apply modifiers
-            if (document.getElementById('hotWater').checked) baseRate *= 1.25;
-            if (document.getElementById('softWash').checked) baseRate *= 0.8;
+            // Apply commercial-specific modifiers
+            if (document.getElementById('hotWater') && document.getElementById('hotWater').checked) baseRate *= 1.25;
+            if (document.getElementById('softWash') && document.getElementById('softWash').checked) baseRate *= 0.9;
+            if (document.getElementById('highVolume') && document.getElementById('highVolume').checked && effectiveArea > 10000) baseRate *= 1.15;
+            if (document.getElementById('tenantOccupied') && document.getElementById('tenantOccupied').checked) baseRate *= 0.85;
             
             baseRate = baseRate / accessDifficulty;
             
             // Calculate hours with minimum setup
             const rawHours = effectiveArea / baseRate;
-            const setupTime = Math.max(0.5, 0.3 + (document.getElementById('wasteRecovery').checked ? 0.2 : 0));
+            const wasteRecoveryElement = document.getElementById('wasteRecovery');
+            const setupTime = Math.max(0.5, 0.3 + (wasteRecoveryElement && wasteRecoveryElement.checked ? 0.2 : 0));
             const totalHours = rawHours + setupTime;
             const totalCrewHours = totalHours * crewSize;
             
-            // Calculate costs
+            // Calculate costs with commercial considerations
             const icLoadedRate = getICLoadedRate();
             const laborCost = calculateLaborCost(totalCrewHours, icLoadedRate);
             const equipmentCost = calculateEquipmentCost(totalHours, equipmentRate);
             const materialCost = calculateMaterialCost(effectiveArea, chemicalCost);
             
             const subtotal = laborCost + equipmentCost + materialCost;
-            let totalCostToCW = subtotal;
+            
+            // Apply contract type discount
+            let totalCostToCW = subtotal * contractType;
+            
             let finalPrice = totalCostToCW / (1 - cityWideMargin);
             
-            // After hours multiplier
-            if (document.getElementById('afterHours').checked) {
+            // Commercial-specific premiums
+            const afterHoursElement = document.getElementById('afterHours');
+            if (afterHoursElement && afterHoursElement.checked) {
                 finalPrice *= 1.25;
             }
+            const emergencyElement = document.getElementById('emergencyService');
+            if (emergencyElement && emergencyElement.checked) {
+                finalPrice *= 1.50;
+            }
+            
+            // Property manager markup (if applicable)
+            const finalPriceWithPM = finalPrice * (1 + propertyManagerMarkup);
             
             const grossProfit = finalPrice - totalCostToCW;
             const pricePerSqFt = finalPrice / effectiveArea;
             
-            // Update displays
+            // Update displays with commercial considerations
             document.getElementById('totalLaborHours').textContent = totalHours.toFixed(1);
             document.getElementById('laborCost').textContent = formatCurrency(laborCost);
             document.getElementById('equipmentCost').textContent = formatCurrency(equipmentCost);
             document.getElementById('materialCost').textContent = formatCurrency(materialCost);
             document.getElementById('totalCostToCW').textContent = formatCurrency(totalCostToCW);
             document.getElementById('pricePerSqFt').textContent = formatCurrencyDetailed(pricePerSqFt);
-            document.getElementById('finalClientPrice').textContent = formatCurrency(finalPrice);
+            document.getElementById('finalClientPrice').textContent = formatCurrency(finalPriceWithPM);
             document.getElementById('cwGrossProfit').textContent = formatCurrency(grossProfit);
             
             updateBreakdownDisplays(totalHours, rawHours, setupTime, crewSize, totalCrewHours, 
                                   icLoadedRate, equipmentCost, materialCost, subtotal, 
-                                  totalCostToCW, cityWideMargin * 100, grossProfit, finalPrice, 
-                                  baseRate, serviceType, condition, accessDifficulty);
+                                  totalCostToCW, cityWideMargin * 100, grossProfit, finalPriceWithPM, 
+                                  baseRate, serviceType, condition, accessDifficulty, contractType, propertyManagerMarkup);
         }
 
         function getProductionRate(serviceType, condition) {
             const rates = productionRates[serviceType];
-            if (!rates) return 600;
+            if (!rates) return 800; // Default commercial rate
             
-            // Default to most appropriate method
-            let method = 'wand_cold';
-            if (serviceType === 'horizontal_concrete') {
-                method = document.getElementById('hotWater').checked ? 'surface_cleaner_hot' : 'wand_cold';
-            } else if (serviceType === 'vertical_surfaces') {
-                method = document.getElementById('softWash').checked ? 'soft_wash' : 'wand_cold';
-            } else if (serviceType === 'building_exterior') {
-                method = document.getElementById('totalArea').value > 5000 ? 'commercial' : 'house_wash';
+            // Select appropriate method based on service type and options
+            let method = 'exterior_wash';
+            const highVolumeElement = document.getElementById('highVolume');
+            
+            if (serviceType === 'warehouse_industrial') {
+                method = (highVolumeElement && highVolumeElement.checked) ? 'large_surfaces' : 'detailed_areas';
+            } else if (serviceType === 'restaurants') {
+                method = 'drive_thru'; // Default for restaurants
+            } else if (serviceType === 'parking_structures') {
+                method = 'concrete_cleaning';
+            } else if (serviceType === 'retail_centers') {
+                method = 'storefronts';
+            } else if (serviceType === 'apartment_complex') {
+                method = 'building_wash';
+            } else if (serviceType === 'medical_facilities') {
+                method = 'specialized_cleaning';
+            } else if (serviceType === 'hotels_hospitality') {
+                method = 'entrance_areas';
+            } else if (serviceType === 'shopping_centers') {
+                method = 'mixed_surfaces';
+            } else if (serviceType === 'government_facilities') {
+                method = 'compliance_cleaning';
+            } else if (serviceType === 'schools_institutions') {
+                method = 'safe_cleaning';
+            } else if (serviceType === 'property_management') {
+                method = 'portfolio_service';
             }
             
-            return rates[method] ? rates[method][condition] : rates[Object.keys(rates)[0]][condition];
+            return rates[method] ? rates[method][condition] : rates[Object.keys(rates)[0]][condition] || 800;
         }
 
         function getICLoadedRate() {
-            const rawRate = parseFloat(document.getElementById('rawLaborRate').value) || 18.00;
-            const stateTax = parseFloat(document.getElementById('stateTaxRate').value) || 0.00;
-            const icProfitRate = parseFloat(document.getElementById('icProfitRate').value) || 10.0;
+            const rawLaborRateElement = document.getElementById('rawLaborRate');
+            const stateTaxRateElement = document.getElementById('stateTaxRate');
+            const icProfitRateElement = document.getElementById('icProfitRate');
+            
+            const rawRate = rawLaborRateElement ? parseFloat(rawLaborRateElement.value) || 17.00 : 17.00;
+            const stateTax = stateTaxRateElement ? parseFloat(stateTaxRateElement.value) || 0.00 : 0.00;
+            const icProfitRate = icProfitRateElement ? parseFloat(icProfitRateElement.value) || 10.0 : 10.0;
             
             const fica = rawRate * 0.0765;
             const futa = rawRate * 0.0060;
@@ -925,8 +1022,11 @@
         function calculateMaterialCost(area, costPerGallon) {
             // Coverage rates: 1 gallon per 500 sq ft for standard cleaning (more efficient)
             let coverage = 500;
-            if (document.getElementById('chemicalStripping').checked) coverage = 300;
-            if (document.getElementById('softWash').checked) coverage = 700;
+            const chemicalStrippingElement = document.getElementById('chemicalStripping');
+            const softWashElement = document.getElementById('softWash');
+            
+            if (chemicalStrippingElement && chemicalStrippingElement.checked) coverage = 300;
+            if (softWashElement && softWashElement.checked) coverage = 700;
             
             const gallonsNeeded = Math.max(0.5, area / coverage);
             const baseCost = gallonsNeeded * costPerGallon;
@@ -946,7 +1046,8 @@
         function updateBreakdownDisplays(totalHours, rawHours, setupTime, crewSize, totalCrewHours, 
                                        hourlyRate, equipmentCost, materialCost, subtotal, 
                                        totalCostToCW, marginPercent, grossProfit, finalPrice, 
-                                       productionRate, serviceType, condition, accessDifficulty) {
+                                       productionRate, serviceType, condition, accessDifficulty, 
+                                       contractType, propertyManagerMarkup) {
             
             document.getElementById('productionRate').textContent = Math.round(productionRate);
             document.getElementById('rawHours').textContent = rawHours.toFixed(1);
@@ -958,7 +1059,7 @@
             document.getElementById('pressureWasherCost').textContent = formatCurrency(equipmentCost * 0.6);
             document.getElementById('surfaceCleanerCost').textContent = formatCurrency(equipmentCost * 0.3);
             document.getElementById('recoveryCost').textContent = formatCurrency(equipmentCost * 0.1);
-            document.getElementById('chemicalsUsed').textContent = (materialCost / 25).toFixed(1); // Estimate gallons
+            document.getElementById('chemicalsUsed').textContent = (materialCost / 25).toFixed(1);
             document.getElementById('totalChemicalCost').textContent = formatCurrency(materialCost * 0.8);
             document.getElementById('fuelSuppliesCost').textContent = formatCurrency(materialCost * 0.2);
             
@@ -969,29 +1070,87 @@
             document.getElementById('marginAmount').textContent = formatCurrency(grossProfit);
             document.getElementById('finalPriceDisplay').textContent = formatCurrency(finalPrice);
             
-            document.getElementById('serviceTypeDisplay').textContent = serviceType.replace('_', ' ');
-            document.getElementById('conditionDisplay').textContent = condition;
+            // Commercial-specific updates
+            document.getElementById('serviceTypeDisplay').textContent = getServiceTypeDisplay(serviceType);
+            document.getElementById('conditionDisplay').textContent = condition.replace('_', ' ');
             document.getElementById('accessDisplay').textContent = getAccessText(accessDifficulty);
             document.getElementById('estimatedDuration').textContent = totalHours.toFixed(1);
             
-            // Update special requirements
+            // Update special requirements for commercial
             const specials = [];
-            if (document.getElementById('hotWater').checked) specials.push('Hot Water');
-            if (document.getElementById('chemicalStripping').checked) specials.push('Chemical Stripping');
-            if (document.getElementById('softWash').checked) specials.push('Soft Wash');
-            if (document.getElementById('wasteRecovery').checked) specials.push('Waste Recovery');
-            if (document.getElementById('afterHours').checked) specials.push('After Hours');
+            const hotWaterElement = document.getElementById('hotWater');
+            const chemicalStrippingElement = document.getElementById('chemicalStripping');
+            const softWashElement = document.getElementById('softWash');
+            const wasteRecoveryElement = document.getElementById('wasteRecovery');
+            const afterHoursElement = document.getElementById('afterHours');
+            const emergencyServiceElement = document.getElementById('emergencyService');
+            const tenantOccupiedElement = document.getElementById('tenantOccupied');
+            const highVolumeElement = document.getElementById('highVolume');
             
-            document.getElementById('specialReqs').textContent = specials.length ? specials.join(', ') : 'None';
-            document.getElementById('wasteHandling').textContent = document.getElementById('wasteRecovery').checked ? 
-                'Mobile Recovery System' : 'Sanitary Sewer Disposal';
+            if (hotWaterElement && hotWaterElement.checked) specials.push('Hot Water');
+            if (chemicalStrippingElement && chemicalStrippingElement.checked) specials.push('Chemical Stripping');
+            if (softWashElement && softWashElement.checked) specials.push('Soft Wash');
+            if (wasteRecoveryElement && wasteRecoveryElement.checked) specials.push('Waste Recovery');
+            if (afterHoursElement && afterHoursElement.checked) specials.push('After Hours');
+            if (emergencyServiceElement && emergencyServiceElement.checked) specials.push('Emergency Service');
+            if (tenantOccupiedElement && tenantOccupiedElement.checked) specials.push('Tenant Occupied');
+            if (highVolumeElement && highVolumeElement.checked) specials.push('High Volume');
+            
+            document.getElementById('specialReqs').textContent = specials.length ? specials.join(', ') : 'Standard Service';
+            document.getElementById('wasteHandling').textContent = (wasteRecoveryElement && wasteRecoveryElement.checked) ? 
+                'Mobile Recovery System' : 'Sanitary Sewer Disposal Required';
+            
+            // Commercial contract information
+            const contractInfo = getContractInfo(contractType, propertyManagerMarkup);
+            document.getElementById('contractTypeDisplay').textContent = contractInfo.type;
+            document.getElementById('frequencyDiscount').textContent = contractInfo.discount;
+            document.getElementById('pmMarkupDisplay').textContent = (propertyManagerMarkup * 100).toFixed(0) + '%';
+        }
+        
+        function getServiceTypeDisplay(serviceType) {
+            const displayNames = {
+                office_buildings: 'Office Buildings',
+                retail_centers: 'Retail Centers', 
+                apartment_complex: 'Apartment Complex',
+                warehouse_industrial: 'Warehouse/Industrial',
+                medical_facilities: 'Medical Facilities',
+                restaurants: 'Restaurants',
+                hotels_hospitality: 'Hotels/Hospitality',
+                parking_structures: 'Parking Structures',
+                shopping_centers: 'Shopping Centers',
+                government_facilities: 'Government Facilities',
+                schools_institutions: 'Schools/Institutions',
+                property_management: 'Property Management Portfolio'
+            };
+            return displayNames[serviceType] || serviceType.replace('_', ' ');
+        }
+        
+        function getContractInfo(contractType, propertyManagerMarkup) {
+            let type = 'One-Time Service';
+            let discount = 'No Discount';
+            
+            if (contractType === 0.85) {
+                type = 'Monthly Recurring';
+                discount = '15% Discount Applied';
+            } else if (contractType === 0.90) {
+                type = 'Quarterly Recurring';
+                discount = '10% Discount Applied';
+            } else if (contractType === 0.95) {
+                type = 'Bi-Annual Recurring';
+                discount = '5% Discount Applied';
+            } else if (contractType === 0.98) {
+                type = 'Annual Recurring';
+                discount = '2% Discount Applied';
+            }
+            
+            return { type, discount };
         }
 
         function getAccessText(difficulty) {
-            if (difficulty == 1.0) return 'Easy';
-            if (difficulty == 1.15) return 'Moderate';
-            if (difficulty == 1.3) return 'Difficult';
-            if (difficulty == 1.5) return 'Very Difficult';
+            if (difficulty == 1.0) return 'Easy - Ground level';
+            if (difficulty == 1.15) return 'Moderate - Some obstacles';
+            if (difficulty == 1.3) return 'Difficult - Multiple levels';
+            if (difficulty == 1.5) return 'Very Difficult - Extreme access';
             return 'Custom';
         }
 
