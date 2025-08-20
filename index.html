@@ -1,0 +1,1036 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nevada Power/Pressure Washing Calculator - City Wide</title>
+    <style>
+        :root {
+            --primary-blue: #1E3A8A;
+            --secondary-blue: #3B82F6;
+            --accent-red: #DC2626;
+            --dark-gray: #374151;
+            --light-gray: #F3F4F6;
+            --success-green: #059669;
+            --white: #FFFFFF;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--light-gray);
+            color: var(--dark-gray);
+            line-height: 1.6;
+        }
+
+        .header {
+            background: linear-gradient(135deg, var(--primary-blue), var(--secondary-blue));
+            color: white;
+            padding: 2rem 0;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .calculator-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .cost-provider-section {
+            grid-column: 1 / -1;
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+        }
+
+        .cost-provider-section h3 {
+            color: var(--primary-blue);
+            margin-bottom: 1.5rem;
+            font-size: 1.5rem;
+        }
+
+        .toggle-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+
+        .toggle-group {
+            text-align: center;
+        }
+
+        .toggle-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--dark-gray);
+        }
+
+        .toggle-buttons {
+            display: flex;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .toggle-buttons button {
+            flex: 1;
+            padding: 0.75rem 1rem;
+            border: none;
+            background: #e5e7eb;
+            color: var(--dark-gray);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .vendor-btn.active {
+            background: var(--accent-red);
+            color: white;
+        }
+
+        .inhouse-btn.active {
+            background: var(--success-green);
+            color: white;
+        }
+
+        .toggle-buttons button:hover {
+            transform: translateY(-2px);
+        }
+
+        .card {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+        }
+
+        .card h3 {
+            color: var(--primary-blue);
+            margin-bottom: 1.5rem;
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+
+        .input-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .input-group {
+            margin-bottom: 1rem;
+        }
+
+        .input-group.full-width {
+            grid-column: 1 / -1;
+        }
+
+        .input-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--dark-gray);
+        }
+
+        .input-group input,
+        .input-group select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+
+        .input-group input:focus,
+        .input-group select:focus {
+            outline: none;
+            border-color: var(--secondary-blue);
+        }
+
+        .checkbox-group {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .checkbox-item input[type="checkbox"] {
+            width: auto;
+        }
+
+        .ic-breakdown {
+            background: #f8fafc;
+            border: 2px solid var(--secondary-blue);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin: 1rem 0;
+        }
+
+        .ic-breakdown h4 {
+            color: var(--primary-blue);
+            margin-bottom: 1rem;
+        }
+
+        .breakdown-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 0.5rem;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .breakdown-total {
+            border-top: 2px solid var(--primary-blue);
+            padding-top: 0.5rem;
+            font-weight: 700;
+        }
+
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .result-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        .result-card.highlight {
+            background: linear-gradient(135deg, var(--accent-red), #ef4444);
+            color: white;
+        }
+
+        .result-card h4 {
+            margin-bottom: 0.5rem;
+            font-size: 1rem;
+            opacity: 0.8;
+        }
+
+        .result-card .value {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .breakdown-section {
+            grid-column: 1 / -1;
+        }
+
+        .breakdown-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .export-section {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 2rem;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .export-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .export-btn {
+            padding: 1rem 2rem;
+            font-size: 1rem;
+            font-weight: 600;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: white;
+        }
+
+        .export-btn.vendor {
+            background: var(--accent-red);
+        }
+
+        .export-btn.client {
+            background: var(--secondary-blue);
+        }
+
+        .export-btn.fsm {
+            background: var(--success-green);
+        }
+
+        .export-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .region-toggle {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .region-btn {
+            padding: 0.75rem 1.5rem;
+            border: 2px solid var(--secondary-blue);
+            background: white;
+            color: var(--secondary-blue);
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .region-btn.active {
+            background: var(--secondary-blue);
+            color: white;
+        }
+
+        .waste-water-notice {
+            background: #fef3c7;
+            border: 2px solid #f59e0b;
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 1rem 0;
+        }
+
+        .waste-water-notice h5 {
+            color: #92400e;
+            margin-bottom: 0.5rem;
+        }
+
+        .waste-water-notice p {
+            color: #92400e;
+            font-size: 0.9rem;
+        }
+
+        @media (max-width: 768px) {
+            .calculator-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .input-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .toggle-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .export-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .region-toggle {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Nevada Power/Pressure Washing Calculator</h1>
+        <p>Professional Pricing for Northern & Southern Nevada - City Wide Facility Solutions</p>
+    </div>
+
+    <div class="container">
+        <!-- Cost Provider Toggle System -->
+        <div class="cost-provider-section">
+            <h3>Cost Provider Selection</h3>
+            <div class="toggle-grid">
+                <div class="toggle-group">
+                    <label>Labor</label>
+                    <div class="toggle-buttons">
+                        <button class="vendor-btn active" data-category="labor" onclick="toggleProvider('labor', 'vendor')">Vendor</button>
+                        <button class="inhouse-btn" data-category="labor" onclick="toggleProvider('labor', 'inhouse')">In-House</button>
+                    </div>
+                </div>
+                <div class="toggle-group">
+                    <label>Equipment</label>
+                    <div class="toggle-buttons">
+                        <button class="vendor-btn active" data-category="equipment" onclick="toggleProvider('equipment', 'vendor')">Vendor</button>
+                        <button class="inhouse-btn" data-category="equipment" onclick="toggleProvider('equipment', 'inhouse')">In-House</button>
+                    </div>
+                </div>
+                <div class="toggle-group">
+                    <label>Cleaning Chemicals</label>
+                    <div class="toggle-buttons">
+                        <button class="vendor-btn active" data-category="chemicals" onclick="toggleProvider('chemicals', 'vendor')">Vendor</button>
+                        <button class="inhouse-btn" data-category="chemicals" onclick="toggleProvider('chemicals', 'inhouse')">In-House</button>
+                    </div>
+                </div>
+                <div class="toggle-group">
+                    <label>Water Recovery</label>
+                    <div class="toggle-buttons">
+                        <button class="vendor-btn active" data-category="recovery" onclick="toggleProvider('recovery', 'vendor')">Vendor</button>
+                        <button class="inhouse-btn" data-category="recovery" onclick="toggleProvider('recovery', 'inhouse')">In-House</button>
+                    </div>
+                </div>
+                <div class="toggle-group">
+                    <label>Supplies</label>
+                    <div class="toggle-buttons">
+                        <button class="vendor-btn active" data-category="supplies" onclick="toggleProvider('supplies', 'vendor')">Vendor</button>
+                        <button class="inhouse-btn" data-category="supplies" onclick="toggleProvider('supplies', 'inhouse')">In-House</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="calculator-grid">
+            <!-- Project Details -->
+            <div class="card">
+                <h3>Project Details</h3>
+                <div class="input-grid">
+                    <div class="input-group full-width">
+                        <label for="serviceType">Service Type</label>
+                        <select id="serviceType" onchange="updateCalculations()">
+                            <option value="horizontal_concrete">Horizontal Concrete - Driveways, sidewalks, patios</option>
+                            <option value="vertical_surfaces">Vertical Surfaces - Walls, siding, stucco</option>
+                            <option value="building_exterior">Building Exterior - Complete house/commercial wash</option>
+                            <option value="parking_lots">Parking Lots & Garages - Large concrete areas</option>
+                            <option value="fleet_vehicles">Fleet Vehicle Washing - Mobile service</option>
+                            <option value="graffiti_removal">Graffiti Removal - Specialized cleaning</option>
+                            <option value="deck_fencing">Deck & Fencing - Wood/composite surfaces</option>
+                            <option value="roof_cleaning">Roof Cleaning - Soft wash/low pressure</option>
+                            <option value="post_construction">Post-Construction - New construction cleanup</option>
+                            <option value="restaurant_hoods">Restaurant Hood Cleaning - Kitchen exhaust</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <label for="totalArea">Total Area (sq ft)</label>
+                        <input type="number" id="totalArea" value="2000" onchange="updateCalculations()">
+                    </div>
+                    <div class="input-group">
+                        <label for="linearFeet">Linear Feet (walls/gutters)</label>
+                        <input type="number" id="linearFeet" value="0" onchange="updateCalculations()">
+                    </div>
+                    <div class="input-group">
+                        <label for="surfaceCondition">Surface Condition</label>
+                        <select id="surfaceCondition" onchange="updateCalculations()">
+                            <option value="good">Good - Light dirt, recent maintenance</option>
+                            <option value="fair">Fair - Moderate buildup, standard wear</option>
+                            <option value="poor">Poor - Heavy buildup, neglected maintenance</option>
+                            <option value="very_poor">Very Poor - Extreme buildup, restoration needed</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <label for="accessDifficulty">Access Difficulty</label>
+                        <select id="accessDifficulty" onchange="updateCalculations()">
+                            <option value="1.0">Easy - Ground level, open access</option>
+                            <option value="1.15">Moderate - Some obstacles, equipment setup</option>
+                            <option value="1.3">Difficult - Height access, tight spaces</option>
+                            <option value="1.5">Very Difficult - Multiple stories, complex setup</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="waste-water-notice">
+                    <h5>Nevada Wastewater Compliance Required</h5>
+                    <p>All wastewater must be contained and properly disposed. Cannot discharge to storm drains or waters of the state without NPDES permit. Recovery equipment or sanitary sewer disposal required.</p>
+                </div>
+
+                <div class="checkbox-group">
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="hotWater" onchange="updateCalculations()">
+                        <label for="hotWater">Hot Water Required (+25% productivity)</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="chemicalStripping" onchange="updateCalculations()">
+                        <label for="chemicalStripping">Chemical Stripping/Degreasing</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="highPressure" onchange="updateCalculations()">
+                        <label for="highPressure">High Pressure (3000+ PSI)</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="softWash" onchange="updateCalculations()">
+                        <label for="softWash">Soft Wash (Delicate surfaces)</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="wasteRecovery" onchange="updateCalculations()">
+                        <label for="wasteRecovery">Wastewater Recovery System</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="afterHours" onchange="updateCalculations()">
+                        <label for="afterHours">After Hours/Weekend (+25%)</label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Labor & Equipment -->
+            <div class="card">
+                <h3>Labor & Equipment Rates</h3>
+                
+                <div class="region-toggle">
+                    <button class="region-btn active" onclick="setRegion('southern')">Southern Nevada</button>
+                    <button class="region-btn" onclick="setRegion('northern')">Northern Nevada</button>
+                </div>
+
+                <div class="ic-breakdown">
+                    <h4>Independent Contractor Rate Breakdown</h4>
+                    <div class="input-group">
+                        <label for="rawLaborRate">Raw Labor Rate ($/hour)</label>
+                        <input type="number" id="rawLaborRate" value="16.50" step="0.25" onchange="updateICBreakdown()">
+                    </div>
+                    <div class="breakdown-grid">
+                        <span>FICA (7.65%):</span>
+                        <span id="ficaAmount">$1.38</span>
+                    </div>
+                    <div class="breakdown-grid">
+                        <span>FUTA (0.60%):</span>
+                        <span id="futaAmount">$0.11</span>
+                    </div>
+                    <div class="breakdown-grid">
+                        <span>Work Comp (2.50%):</span>
+                        <span id="workCompAmount">$0.45</span>
+                    </div>
+                    <div class="breakdown-grid">
+                        <span>General Liability (0.50%):</span>
+                        <span id="glAmount">$0.09</span>
+                    </div>
+                    <div class="breakdown-grid">
+                        <span>State Income Tax (%):</span>
+                        <input type="number" id="stateTaxRate" value="0.00" step="0.01" onchange="updateICBreakdown()">
+                    </div>
+                    <div class="breakdown-grid">
+                        <span>State Tax Amount:</span>
+                        <span id="stateTaxAmount">$0.00</span>
+                    </div>
+                    <div class="breakdown-grid breakdown-total">
+                        <span>Sub Total:</span>
+                        <span id="subTotal">$20.03</span>
+                    </div>
+                    <div class="breakdown-grid">
+                        <span>IC Profit & OH (%):</span>
+                        <input type="number" id="icProfitRate" value="10.0" step="0.5" onchange="updateICBreakdown()">
+                    </div>
+                    <div class="breakdown-grid breakdown-total">
+                        <span><strong>IC Loaded Rate:</strong></span>
+                        <span id="icLoadedRate"><strong>$22.03</strong></span>
+                    </div>
+                </div>
+
+                <div class="input-grid">
+                    <div class="input-group">
+                        <label for="crewSize">Crew Size</label>
+                        <select id="crewSize" onchange="updateCalculations()">
+                            <option value="1">1 Person</option>
+                            <option value="2" selected>2 People</option>
+                            <option value="3">3 People</option>
+                            <option value="4">4 People</option>
+                            <option value="5">5 People</option>
+                            <option value="6">6 People</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <label for="equipmentRate">Equipment Rate ($/hour)</label>
+                        <input type="number" id="equipmentRate" value="35.00" step="5.00" onchange="updateCalculations()">
+                    </div>
+                    <div class="input-group">
+                        <label for="chemicalCost">Chemical Cost ($/gallon)</label>
+                        <input type="number" id="chemicalCost" value="8.50" step="0.50" onchange="updateCalculations()">
+                    </div>
+                    <div class="input-group">
+                        <label for="cityWideMargin">City Wide Margin (%)</label>
+                        <input type="number" id="cityWideMargin" value="35" step="1" onchange="updateCalculations()">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Results Display -->
+        <div class="results-grid">
+            <div class="result-card">
+                <h4>Total Labor Hours</h4>
+                <div class="value" id="totalLaborHours">0.0</div>
+                <p>Including setup/cleanup</p>
+            </div>
+            <div class="result-card">
+                <h4>Labor Cost</h4>
+                <div class="value" id="laborCost">$0</div>
+                <p>Crew rate with load factors</p>
+            </div>
+            <div class="result-card">
+                <h4>Equipment Cost</h4>
+                <div class="value" id="equipmentCost">$0</div>
+                <p>Pressure washer, surface cleaner</p>
+            </div>
+            <div class="result-card">
+                <h4>Material Cost</h4>
+                <div class="value" id="materialCost">$0</div>
+                <p>Chemicals, fuel, supplies</p>
+            </div>
+            <div class="result-card">
+                <h4>Total Cost to CW</h4>
+                <div class="value" id="totalCostToCW">$0</div>
+                <p>All costs before margin</p>
+            </div>
+            <div class="result-card">
+                <h4>Price Per Sq Ft</h4>
+                <div class="value" id="pricePerSqFt">$0.00</div>
+                <p>Client rate per square foot</p>
+            </div>
+            <div class="result-card highlight">
+                <h4>Final Client Price</h4>
+                <div class="value" id="finalClientPrice">$0</div>
+                <p>Total project cost</p>
+            </div>
+            <div class="result-card highlight">
+                <h4>CW Gross Profit</h4>
+                <div class="value" id="cwGrossProfit">$0</div>
+                <p>Margin after all costs</p>
+            </div>
+        </div>
+
+        <!-- Detailed Breakdown Section -->
+        <div class="breakdown-section">
+            <h3 style="color: var(--primary-blue); margin-bottom: 1.5rem;">Detailed Cost Breakdown</h3>
+            <div class="breakdown-cards">
+                <div class="card">
+                    <h3>Labor Structure</h3>
+                    <div id="laborBreakdown">
+                        <p><strong>Production Rate:</strong> <span id="productionRate">0</span> sq ft/hour</p>
+                        <p><strong>Raw Hours:</strong> <span id="rawHours">0.0</span> hours</p>
+                        <p><strong>Setup/Cleanup:</strong> <span id="setupTime">0.5</span> hours</p>
+                        <p><strong>Crew Size:</strong> <span id="crewSizeDisplay">2</span> people</p>
+                        <p><strong>Total Crew Hours:</strong> <span id="totalCrewHours">0.0</span> hours</p>
+                        <p><strong>Hourly Rate:</strong> <span id="hourlyRateDisplay">$22.03</span></p>
+                    </div>
+                </div>
+                <div class="card">
+                    <h3>Equipment & Materials</h3>
+                    <div id="equipmentBreakdown">
+                        <p><strong>Pressure Washer:</strong> <span id="pressureWasherCost">$0</span></p>
+                        <p><strong>Surface Cleaner:</strong> <span id="surfaceCleanerCost">$0</span></p>
+                        <p><strong>Recovery System:</strong> <span id="recoveryCost">$0</span></p>
+                        <p><strong>Chemicals Used:</strong> <span id="chemicalsUsed">0</span> gallons</p>
+                        <p><strong>Chemical Cost:</strong> <span id="totalChemicalCost">$0</span></p>
+                        <p><strong>Fuel & Supplies:</strong> <span id="fuelSuppliesCost">$0</span></p>
+                    </div>
+                </div>
+                <div class="card">
+                    <h3>Pricing Structure</h3>
+                    <div id="pricingBreakdown">
+                        <p><strong>Subtotal:</strong> <span id="subtotalCost">$0</span></p>
+                        <p><strong>Provider Markups:</strong> <span id="providerMarkups">$0</span></p>
+                        <p><strong>Total Cost to CW:</strong> <span id="totalCostDisplay">$0</span></p>
+                        <p><strong>CW Margin (%):</strong> <span id="marginPercent">35%</span></p>
+                        <p><strong>Margin Amount:</strong> <span id="marginAmount">$0</span></p>
+                        <p><strong>Final Price:</strong> <span id="finalPriceDisplay">$0</span></p>
+                    </div>
+                </div>
+                <div class="card">
+                    <h3>Service Specifications</h3>
+                    <div id="serviceSpecs">
+                        <p><strong>Service Type:</strong> <span id="serviceTypeDisplay">Horizontal Concrete</span></p>
+                        <p><strong>Surface Condition:</strong> <span id="conditionDisplay">Good</span></p>
+                        <p><strong>Access Difficulty:</strong> <span id="accessDisplay">Easy</span></p>
+                        <p><strong>Special Requirements:</strong> <span id="specialReqs">None</span></p>
+                        <p><strong>Wastewater Handling:</strong> <span id="wasteHandling">Recovery Required</span></p>
+                        <p><strong>Estimated Duration:</strong> <span id="estimatedDuration">0.0</span> hours</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Export Options -->
+        <div class="export-section">
+            <h3>Export Options</h3>
+            <p>Generate professional documents for vendors, clients, and internal management</p>
+            <div class="export-buttons">
+                <button class="export-btn vendor" onclick="exportVendorSpecs()">
+                    Export Vendor Specifications
+                </button>
+                <button class="export-btn client" onclick="exportClientInstructions()">
+                    Export Client Instructions
+                </button>
+                <button class="export-btn fsm" onclick="exportFSMSummary()">
+                    Export FSM Job Summary
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Production rates based on Nevada market research (sq ft per hour)
+        const productionRates = {
+            horizontal_concrete: {
+                wand_cold: { good: 750, fair: 600, poor: 450, very_poor: 350 },
+                surface_cleaner_hot: { good: 1200, fair: 950, poor: 750, very_poor: 550 }
+            },
+            vertical_surfaces: {
+                wand_cold: { good: 500, fair: 400, poor: 300, very_poor: 200 },
+                soft_wash: { good: 900, fair: 700, poor: 500, very_poor: 350 }
+            },
+            building_exterior: {
+                house_wash: { good: 1400, fair: 1100, poor: 800, very_poor: 600 },
+                commercial: { good: 900, fair: 700, poor: 500, very_poor: 350 }
+            },
+            parking_lots: {
+                surface_cleaner: { good: 1500, fair: 1200, poor: 900, very_poor: 700 }
+            },
+            fleet_vehicles: {
+                standard: { good: 3, fair: 2.5, poor: 2, very_poor: 1.5 } // vehicles per hour
+            },
+            graffiti_removal: {
+                chemical_strip: { good: 150, fair: 120, poor: 80, very_poor: 50 }
+            },
+            deck_fencing: {
+                wood_surfaces: { good: 700, fair: 550, poor: 400, very_poor: 300 }
+            },
+            roof_cleaning: {
+                soft_wash: { good: 900, fair: 700, poor: 500, very_poor: 350 }
+            },
+            post_construction: {
+                new_concrete: { good: 1000, fair: 800, poor: 600, very_poor: 400 }
+            },
+            restaurant_hoods: {
+                hood_cleaning: { good: 75, fair: 60, poor: 45, very_poor: 30 } // linear feet per hour
+            }
+        };
+
+        let currentRegion = 'southern';
+        let providerSettings = {
+            labor: 'vendor',
+            equipment: 'vendor', 
+            chemicals: 'vendor',
+            recovery: 'vendor',
+            supplies: 'vendor'
+        };
+
+        function setRegion(region) {
+            currentRegion = region;
+            
+            // Update button states
+            document.querySelectorAll('.region-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            // Update labor rates based on region
+            if (region === 'southern') {
+                document.getElementById('rawLaborRate').value = '17.00';
+            } else {
+                document.getElementById('rawLaborRate').value = '16.00';
+            }
+            
+            updateICBreakdown();
+            updateCalculations();
+        }
+
+        function toggleProvider(category, provider) {
+            providerSettings[category] = provider;
+            
+            // Update button states
+            const buttons = document.querySelectorAll(`[data-category="${category}"]`);
+            buttons.forEach(btn => btn.classList.remove('active'));
+            
+            const activeBtn = document.querySelector(`[data-category="${category}"].${provider}-btn`);
+            activeBtn.classList.add('active');
+            
+            updateCalculations();
+        }
+
+        function updateICBreakdown() {
+            const rawRate = parseFloat(document.getElementById('rawLaborRate').value) || 18.00;
+            const stateTax = parseFloat(document.getElementById('stateTaxRate').value) || 0.00;
+            const icProfitRate = parseFloat(document.getElementById('icProfitRate').value) || 10.0;
+            
+            const fica = rawRate * 0.0765;
+            const futa = rawRate * 0.0060;
+            const workComp = rawRate * 0.0250;
+            const gl = rawRate * 0.0050;
+            const stateTaxAmount = rawRate * (stateTax / 100);
+            
+            const subTotal = rawRate + fica + futa + workComp + gl + stateTaxAmount;
+            const icProfitAmount = subTotal * (icProfitRate / 100);
+            const icLoadedRate = subTotal + icProfitAmount;
+            
+            document.getElementById('ficaAmount').textContent = formatCurrencyDetailed(fica);
+            document.getElementById('futaAmount').textContent = formatCurrencyDetailed(futa);
+            document.getElementById('workCompAmount').textContent = formatCurrencyDetailed(workComp);
+            document.getElementById('glAmount').textContent = formatCurrencyDetailed(gl);
+            document.getElementById('stateTaxAmount').textContent = formatCurrencyDetailed(stateTaxAmount);
+            document.getElementById('subTotal').textContent = formatCurrencyDetailed(subTotal);
+            document.getElementById('icLoadedRate').textContent = formatCurrencyDetailed(icLoadedRate);
+            
+            updateCalculations();
+        }
+
+        function updateCalculations() {
+            const serviceType = document.getElementById('serviceType').value;
+            const totalArea = parseFloat(document.getElementById('totalArea').value) || 0;
+            const linearFeet = parseFloat(document.getElementById('linearFeet').value) || 0;
+            const condition = document.getElementById('surfaceCondition').value;
+            const accessDifficulty = parseFloat(document.getElementById('accessDifficulty').value);
+            const crewSize = parseInt(document.getElementById('crewSize').value);
+            const equipmentRate = parseFloat(document.getElementById('equipmentRate').value);
+            const chemicalCost = parseFloat(document.getElementById('chemicalCost').value);
+            const cityWideMargin = parseFloat(document.getElementById('cityWideMargin').value) / 100;
+            
+            // Calculate production rate
+            let baseRate = getProductionRate(serviceType, condition);
+            let effectiveArea = Math.max(totalArea, linearFeet);
+            
+            // Apply modifiers
+            if (document.getElementById('hotWater').checked) baseRate *= 1.25;
+            if (document.getElementById('softWash').checked) baseRate *= 0.8;
+            
+            baseRate = baseRate / accessDifficulty;
+            
+            // Calculate hours with minimum setup
+            const rawHours = effectiveArea / baseRate;
+            const setupTime = Math.max(0.5, 0.3 + (document.getElementById('wasteRecovery').checked ? 0.2 : 0));
+            const totalHours = rawHours + setupTime;
+            const totalCrewHours = totalHours * crewSize;
+            
+            // Calculate costs
+            const icLoadedRate = getICLoadedRate();
+            const laborCost = calculateLaborCost(totalCrewHours, icLoadedRate);
+            const equipmentCost = calculateEquipmentCost(totalHours, equipmentRate);
+            const materialCost = calculateMaterialCost(effectiveArea, chemicalCost);
+            
+            const subtotal = laborCost + equipmentCost + materialCost;
+            let totalCostToCW = subtotal;
+            let finalPrice = totalCostToCW / (1 - cityWideMargin);
+            
+            // After hours multiplier
+            if (document.getElementById('afterHours').checked) {
+                finalPrice *= 1.25;
+            }
+            
+            const grossProfit = finalPrice - totalCostToCW;
+            const pricePerSqFt = finalPrice / effectiveArea;
+            
+            // Update displays
+            document.getElementById('totalLaborHours').textContent = totalHours.toFixed(1);
+            document.getElementById('laborCost').textContent = formatCurrency(laborCost);
+            document.getElementById('equipmentCost').textContent = formatCurrency(equipmentCost);
+            document.getElementById('materialCost').textContent = formatCurrency(materialCost);
+            document.getElementById('totalCostToCW').textContent = formatCurrency(totalCostToCW);
+            document.getElementById('pricePerSqFt').textContent = formatCurrencyDetailed(pricePerSqFt);
+            document.getElementById('finalClientPrice').textContent = formatCurrency(finalPrice);
+            document.getElementById('cwGrossProfit').textContent = formatCurrency(grossProfit);
+            
+            updateBreakdownDisplays(totalHours, rawHours, setupTime, crewSize, totalCrewHours, 
+                                  icLoadedRate, equipmentCost, materialCost, subtotal, 
+                                  totalCostToCW, cityWideMargin * 100, grossProfit, finalPrice, 
+                                  baseRate, serviceType, condition, accessDifficulty);
+        }
+
+        function getProductionRate(serviceType, condition) {
+            const rates = productionRates[serviceType];
+            if (!rates) return 600;
+            
+            // Default to most appropriate method
+            let method = 'wand_cold';
+            if (serviceType === 'horizontal_concrete') {
+                method = document.getElementById('hotWater').checked ? 'surface_cleaner_hot' : 'wand_cold';
+            } else if (serviceType === 'vertical_surfaces') {
+                method = document.getElementById('softWash').checked ? 'soft_wash' : 'wand_cold';
+            } else if (serviceType === 'building_exterior') {
+                method = document.getElementById('totalArea').value > 5000 ? 'commercial' : 'house_wash';
+            }
+            
+            return rates[method] ? rates[method][condition] : rates[Object.keys(rates)[0]][condition];
+        }
+
+        function getICLoadedRate() {
+            const rawRate = parseFloat(document.getElementById('rawLaborRate').value) || 18.00;
+            const stateTax = parseFloat(document.getElementById('stateTaxRate').value) || 0.00;
+            const icProfitRate = parseFloat(document.getElementById('icProfitRate').value) || 10.0;
+            
+            const fica = rawRate * 0.0765;
+            const futa = rawRate * 0.0060;
+            const workComp = rawRate * 0.0250;
+            const gl = rawRate * 0.0050;
+            const stateTaxAmount = rawRate * (stateTax / 100);
+            
+            const subTotal = rawRate + fica + futa + workComp + gl + stateTaxAmount;
+            
+            if (providerSettings.labor === 'inhouse') {
+                return subTotal; // No IC profit for in-house
+            } else {
+                const icProfitAmount = subTotal * (icProfitRate / 100);
+                return subTotal + icProfitAmount;
+            }
+        }
+
+        function calculateLaborCost(totalCrewHours, hourlyRate) {
+            const baseCost = totalCrewHours * hourlyRate;
+            const cityWideMargin = parseFloat(document.getElementById('cityWideMargin').value) / 100;
+            
+            if (providerSettings.labor === 'vendor') {
+                return baseCost / (1 - cityWideMargin);
+            } else {
+                return baseCost / (1 - cityWideMargin);
+            }
+        }
+
+        function calculateEquipmentCost(hours, rate) {
+            const baseCost = hours * rate;
+            const cityWideMargin = parseFloat(document.getElementById('cityWideMargin').value) / 100;
+            
+            if (providerSettings.equipment === 'vendor') {
+                const costWithICProfit = baseCost * 1.10;
+                return costWithICProfit / (1 - cityWideMargin);
+            } else {
+                return baseCost / (1 - cityWideMargin);
+            }
+        }
+
+        function calculateMaterialCost(area, costPerGallon) {
+            // Coverage rates: 1 gallon per 500 sq ft for standard cleaning (more efficient)
+            let coverage = 500;
+            if (document.getElementById('chemicalStripping').checked) coverage = 300;
+            if (document.getElementById('softWash').checked) coverage = 700;
+            
+            const gallonsNeeded = Math.max(0.5, area / coverage);
+            const baseCost = gallonsNeeded * costPerGallon;
+            
+            // Add fuel and supplies (20% of chemical cost)
+            const totalMaterialCost = baseCost * 1.2;
+            const cityWideMargin = parseFloat(document.getElementById('cityWideMargin').value) / 100;
+            
+            if (providerSettings.chemicals === 'vendor') {
+                const costWithICProfit = totalMaterialCost * 1.10;
+                return costWithICProfit / (1 - cityWideMargin);
+            } else {
+                return totalMaterialCost / (1 - cityWideMargin);
+            }
+        }
+
+        function updateBreakdownDisplays(totalHours, rawHours, setupTime, crewSize, totalCrewHours, 
+                                       hourlyRate, equipmentCost, materialCost, subtotal, 
+                                       totalCostToCW, marginPercent, grossProfit, finalPrice, 
+                                       productionRate, serviceType, condition, accessDifficulty) {
+            
+            document.getElementById('productionRate').textContent = Math.round(productionRate);
+            document.getElementById('rawHours').textContent = rawHours.toFixed(1);
+            document.getElementById('setupTime').textContent = setupTime.toFixed(1);
+            document.getElementById('crewSizeDisplay').textContent = crewSize;
+            document.getElementById('totalCrewHours').textContent = totalCrewHours.toFixed(1);
+            document.getElementById('hourlyRateDisplay').textContent = formatCurrencyDetailed(hourlyRate);
+            
+            document.getElementById('pressureWasherCost').textContent = formatCurrency(equipmentCost * 0.6);
+            document.getElementById('surfaceCleanerCost').textContent = formatCurrency(equipmentCost * 0.3);
+            document.getElementById('recoveryCost').textContent = formatCurrency(equipmentCost * 0.1);
+            document.getElementById('chemicalsUsed').textContent = (materialCost / 25).toFixed(1); // Estimate gallons
+            document.getElementById('totalChemicalCost').textContent = formatCurrency(materialCost * 0.8);
+            document.getElementById('fuelSuppliesCost').textContent = formatCurrency(materialCost * 0.2);
+            
+            document.getElementById('subtotalCost').textContent = formatCurrency(subtotal);
+            document.getElementById('providerMarkups').textContent = formatCurrency(totalCostToCW - subtotal);
+            document.getElementById('totalCostDisplay').textContent = formatCurrency(totalCostToCW);
+            document.getElementById('marginPercent').textContent = marginPercent.toFixed(0) + '%';
+            document.getElementById('marginAmount').textContent = formatCurrency(grossProfit);
+            document.getElementById('finalPriceDisplay').textContent = formatCurrency(finalPrice);
+            
+            document.getElementById('serviceTypeDisplay').textContent = serviceType.replace('_', ' ');
+            document.getElementById('conditionDisplay').textContent = condition;
+            document.getElementById('accessDisplay').textContent = getAccessText(accessDifficulty);
+            document.getElementById('estimatedDuration').textContent = totalHours.toFixed(1);
+            
+            // Update special requirements
+            const specials = [];
+            if (document.getElementById('hotWater').checked) specials.push('Hot Water');
+            if (document.getElementById('chemicalStripping').checked) specials.push('Chemical Stripping');
+            if (document.getElementById('softWash').checked) specials.push('Soft Wash');
+            if (document.getElementById('wasteRecovery').checked) specials.push('Waste Recovery');
+            if (document.getElementById('afterHours').checked) specials.push('After Hours');
+            
+            document.getElementById('specialReqs').textContent = specials.length ? specials.join(', ') : 'None';
+            document.getElementById('wasteHandling').textContent = document.getElementById('wasteRecovery').checked ? 
+                'Mobile Recovery System' : 'Sanitary Sewer Disposal';
+        }
+
+        function getAccessText(difficulty) {
+            if (difficulty == 1.0) return 'Easy';
+            if (difficulty == 1.15) return 'Moderate';
+            if (difficulty == 1.3) return 'Difficult';
+            if (difficulty == 1.5) return 'Very Difficult';
+            return 'Custom';
+        }
+
+        function formatCurrency(amount) {
+            return new Intl.NumberFormat('en-US', {
+                style: 'currency',
+                currency: 'USD',
+                minimumFractionDigits: 0,
+                maximumFractionDigits: 0
+            }).format(amount);
+        }
+
+        function formatCurrencyDetailed(amount) {
+            return new Intl.NumberFormat('en-US', {
+                style: 'currency',
+                currency: 'USD',
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            }).format(amount);
+        }
+
+        function exportVendorSpecs() {
+            // RTF format content for vendor specifications
+            alert('Vendor Specifications RTF export functionality would be implemented here');
+        }
+
+        function exportClientInstructions() {
+            // RTF format content for client instructions
+            alert('Client Instructions RTF export functionality would be implemented here');
+        }
+
+        function exportFSMSummary() {
+            // RTF format content for FSM job summary
+            alert('FSM Job Summary RTF export functionality would be implemented here');
+        }
+
+        // Initialize calculator
+        updateICBreakdown();
+        updateCalculations();
+    </script>
+</body>
+</html>
