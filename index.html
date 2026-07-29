@@ -1,1565 +1,786 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nevada Power/Pressure Washing Calculator - City Wide</title>
-    <style>
-        :root {
-            --primary-blue: #a81e26;
-            --secondary-blue: #d22730;
-            --accent-red: #d22730;
-            --dark-gray: #2d2a26;
-            --light-gray: #f5f5f5;
-            --success-green: #0aa6a9;
-            --white: #FFFFFF;
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: Verdana, 'Liberation Sans', 'DejaVu Sans', Geneva, Tahoma, sans-serif;
-            background-color: var(--light-gray);
-            color: var(--dark-gray);
-            line-height: 1.6;
-        }
-
-        .header {
-            background: linear-gradient(135deg, var(--primary-blue), var(--secondary-blue));
-            color: white;
-            padding: 2rem 0;
-            text-align: center;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
-
-        .header h1 {
-            font-size: 2.5rem;
-            font-weight: 700;
-            margin-bottom: 0.5rem;
-        }
-
-        .header p {
-            font-size: 1.1rem;
-            opacity: 0.9;
-        }
-
-        .container {
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 2rem;
-        }
-
-        .calculator-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 2rem;
-            margin-bottom: 2rem;
-        }
-
-        .cost-provider-section {
-            grid-column: 1 / -1;
-            background: white;
-            padding: 2rem;
-            border-radius: 12px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            margin-bottom: 2rem;
-        }
-
-        .cost-provider-section h3 {
-            color: var(--primary-blue);
-            margin-bottom: 1.5rem;
-            font-size: 1.5rem;
-        }
-
-        .toggle-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 1rem;
-        }
-
-        .toggle-group {
-            text-align: center;
-        }
-
-        .toggle-group label {
-            display: block;
-            font-weight: 600;
-            margin-bottom: 0.5rem;
-            color: var(--dark-gray);
-        }
-
-        .toggle-buttons {
-            display: flex;
-            border-radius: 8px;
-            overflow: hidden;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        }
-
-        .toggle-buttons button {
-            flex: 1;
-            padding: 0.75rem 1rem;
-            border: none;
-            background: #e5e5e5;
-            color: var(--dark-gray);
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .vendor-btn.active {
-            background: var(--accent-red);
-            color: white;
-        }
-
-        .inhouse-btn.active {
-            background: var(--success-green);
-            color: white;
-        }
-
-        .toggle-buttons button:hover {
-            transform: translateY(-2px);
-        }
-
-        .card {
-            background: white;
-            padding: 2rem;
-            border-radius: 12px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            margin-bottom: 2rem;
-        }
-
-        .card h3 {
-            color: var(--primary-blue);
-            margin-bottom: 1.5rem;
-            font-size: 1.25rem;
-            font-weight: 600;
-        }
-
-        .input-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 1rem;
-        }
-
-        .input-group {
-            margin-bottom: 1rem;
-        }
-
-        .input-group.full-width {
-            grid-column: 1 / -1;
-        }
-
-        .input-group label {
-            display: block;
-            font-weight: 600;
-            margin-bottom: 0.5rem;
-            color: var(--dark-gray);
-        }
-
-        .input-group input,
-        .input-group select {
-            width: 100%;
-            padding: 0.75rem;
-            border: 2px solid #e5e5e5;
-            border-radius: 8px;
-            font-size: 1rem;
-            transition: border-color 0.3s ease;
-        }
-
-        .input-group input:focus,
-        .input-group select:focus {
-            outline: none;
-            border-color: var(--secondary-blue);
-        }
-
-        .checkbox-group {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 0.5rem;
-            margin-top: 1rem;
-        }
-
-        .checkbox-item {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .checkbox-item input[type="checkbox"] {
-            width: auto;
-        }
-
-        .ic-breakdown {
-            background: #f5f5f5;
-            border: 2px solid var(--secondary-blue);
-            border-radius: 8px;
-            padding: 1.5rem;
-            margin: 1rem 0;
-        }
-
-        .ic-breakdown h4 {
-            color: var(--primary-blue);
-            margin-bottom: 1rem;
-        }
-
-        .breakdown-grid {
-            display: grid;
-            grid-template-columns: 2fr 1fr;
-            gap: 0.5rem;
-            align-items: center;
-            margin-bottom: 0.5rem;
-        }
-
-        .breakdown-total {
-            border-top: 2px solid var(--primary-blue);
-            padding-top: 0.5rem;
-            font-weight: 700;
-        }
-
-        .results-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 1.5rem;
-            margin: 2rem 0;
-        }
-
-        .result-card {
-            background: white;
-            padding: 1.5rem;
-            border-radius: 12px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            text-align: center;
-        }
-
-        .result-card.highlight {
-            background: linear-gradient(135deg, var(--accent-red), #d22730);
-            color: white;
-        }
-
-        .result-card h4 {
-            margin-bottom: 0.5rem;
-            font-size: 1rem;
-            opacity: 0.8;
-        }
-
-        .result-card .value {
-            font-size: 2rem;
-            font-weight: 700;
-            margin-bottom: 0.5rem;
-        }
-
-        .breakdown-section {
-            grid-column: 1 / -1;
-        }
-
-        .breakdown-cards {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 1.5rem;
-        }
-
-        .export-section {
-            grid-column: 1 / -1;
-            text-align: center;
-            padding: 2rem;
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
-
-        .export-buttons {
-            display: flex;
-            justify-content: center;
-            gap: 1rem;
-            flex-wrap: wrap;
-        }
-
-        .export-btn {
-            padding: 1rem 2rem;
-            font-size: 1rem;
-            font-weight: 600;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            color: white;
-        }
-
-        .export-btn.vendor {
-            background: var(--accent-red);
-        }
-
-        .export-btn.client {
-            background: var(--secondary-blue);
-        }
-
-        .export-btn.fsm {
-            background: var(--success-green);
-        }
-
-        .export-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
-        }
-
-        .region-toggle {
-            display: flex;
-            justify-content: center;
-            gap: 1rem;
-            margin-bottom: 1rem;
-        }
-
-        .region-btn {
-            padding: 0.75rem 1.5rem;
-            border: 2px solid var(--secondary-blue);
-            background: white;
-            color: var(--secondary-blue);
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 600;
-            transition: all 0.3s ease;
-        }
-
-        .region-btn.active {
-            background: var(--secondary-blue);
-            color: white;
-        }
-
-        .waste-water-notice {
-            background: #fbf2d3;
-            border: 2px solid #e5b423;
-            border-radius: 8px;
-            padding: 1rem;
-            margin: 1rem 0;
-        }
-
-        .waste-water-notice h5 {
-            color: #7a6013;
-            margin-bottom: 0.5rem;
-        }
-
-        .waste-water-notice p {
-            color: #7a6013;
-            font-size: 0.9rem;
-        }
-
-        @media (max-width: 768px) {
-            .calculator-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .input-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .toggle-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .export-buttons {
-                flex-direction: column;
-                align-items: center;
-            }
-
-            .region-toggle {
-                flex-direction: column;
-                align-items: center;
-            }
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>City Wide Pressure Washing Calculator</title>
+<style>
+:root{
+  --cw-red:#D22730; --cw-red-dark:#a81e26; --cw-black:#2D2A26; --cw-grey:#636466;
+  --cw-white:#FFFFFF; --cw-teal:#0AA6A9; --cw-gold:#E5B423; --cw-light:#F5F5F5; --cw-border:#E5E5E5;
+  --sp-xs:4px; --sp-sm:8px; --sp-md:16px; --sp-lg:24px; --sp-xl:32px;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{
+  font-family:Verdana,'Liberation Sans','DejaVu Sans',Geneva,Tahoma,sans-serif;
+  background:linear-gradient(135deg,#ffffff 0%,#f0f0f0 100%);
+  min-height:100vh;color:var(--cw-black);padding:16px;font-size:14px;
+}
+.container{max-width:1500px;margin:0 auto;background:#fff;border-radius:15px;box-shadow:0 20px 40px rgba(0,0,0,.12);overflow:hidden}
+.logobar{background:#fff;padding:16px 30px 12px;text-align:center;border-bottom:1px solid var(--cw-border)}
+.logobar img{height:38px;width:auto;display:inline-block}
+.header{background:linear-gradient(135deg,var(--cw-red-dark) 0%,var(--cw-red) 100%);color:#fff;padding:20px 30px 18px;position:relative}
+.header h1{font-size:2em;font-weight:700;text-align:center;letter-spacing:.02em}
+.header p{text-align:center;font-size:13px;margin-top:6px;color:#fbe9ea}
+.header .hdr-actions{position:absolute;top:16px;right:20px;display:flex;gap:8px}
+.header .hdr-btn{background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.5);color:#fff;border-radius:16px;padding:6px 14px;font-size:11.5px;font-weight:700;cursor:pointer;font-family:inherit}
+.header .hdr-btn:hover{background:rgba(255,255,255,.28)}
+.tabs{display:flex;background:var(--cw-black);flex-wrap:wrap}
+.tab{flex:1;min-width:130px;padding:14px 10px;text-align:center;color:#cfcecd;cursor:pointer;font-weight:700;font-size:13px;border-bottom:4px solid transparent;user-select:none}
+.tab:hover{color:#fff}
+.tab.active{color:#fff;border-bottom-color:var(--cw-red);background:#3a3733}
+.controlbar{display:flex;flex-wrap:wrap;gap:14px;align-items:flex-end;padding:14px 24px;background:#fafafa;border-bottom:1px solid var(--cw-border)}
+.controlbar .cfield label{display:block;font-size:10px;font-weight:700;color:var(--cw-grey);text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px}
+.controlbar select,.controlbar input{padding:8px 10px;border:2px solid var(--cw-border);border-radius:6px;font-size:13px;font-family:inherit;background:#fff}
+.controlbar select:focus,.controlbar input:focus{outline:none;border-color:var(--cw-red)}
+.marginpill{font-size:12px;padding:6px 12px;border-radius:12px;font-weight:700;background:#e8f4fb;color:#1565a5}
+.marginpill.hot{background:#fde9ea;color:var(--cw-red-dark)}
+.tricnote{font-size:10px;color:var(--cw-grey);max-width:200px;line-height:1.35}
+.main{display:grid;grid-template-columns:1fr 360px;gap:24px;padding:24px}
+@media(max-width:1000px){.main{grid-template-columns:1fr}}
+.card{background:#fff;border:1px solid var(--cw-border);border-radius:12px;padding:20px;margin-bottom:20px}
+.card h2{font-size:1.15em;font-weight:700;border-bottom:2px solid var(--cw-red);padding-bottom:8px;margin-bottom:14px}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media(max-width:700px){.grid3,.grid2{grid-template-columns:1fr}}
+.field label{display:block;font-size:11px;font-weight:700;color:var(--cw-grey);margin-bottom:5px}
+.field input,.field select,.field textarea{width:100%;padding:9px 10px;border:2px solid var(--cw-border);border-radius:6px;font-size:14px;font-family:inherit;background:#fff}
+.field input:focus,.field select:focus{outline:none;border-color:var(--cw-red)}
+.field small{display:block;color:var(--cw-grey);font-size:10.5px;margin-top:3px;line-height:1.4}
+.svc-card{border:1px solid var(--cw-border);border-radius:10px;margin-bottom:14px;overflow:hidden;background:#fff}
+.svc-head{display:flex;align-items:center;gap:12px;padding:12px 16px;cursor:pointer;background:#fafafa;user-select:none}
+.svc-head:hover{background:#f3f3f3}
+.svc-ico{width:34px;height:34px;background:#fff;border-radius:50%;border:1px solid var(--cw-border);padding:5px;flex-shrink:0}
+.svc-ico svg{width:100%;height:100%;stroke:var(--cw-grey);fill:none;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
+.svc-head .t{flex:1}
+.svc-head .t b{font-size:14px;display:block}
+.svc-head .t span{font-size:11px;color:var(--cw-grey)}
+.svc-price{font-weight:700;color:var(--cw-red);font-size:14px;white-space:nowrap}
+.svc-toggle{width:44px;height:24px;border-radius:12px;background:#d5d5d5;position:relative;flex-shrink:0;transition:background .2s}
+.svc-toggle::after{content:'';position:absolute;width:18px;height:18px;border-radius:50%;background:#fff;top:3px;left:3px;transition:left .2s;box-shadow:0 1px 3px rgba(0,0,0,.3)}
+.svc-card.on .svc-toggle{background:var(--cw-teal)}
+.svc-card.on .svc-toggle::after{left:23px}
+.svc-body{display:none;padding:16px;border-top:1px solid var(--cw-border)}
+.svc-card.on .svc-body{display:block}
+.svc-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:12px}
+.buildup{background:var(--cw-light);border-radius:8px;padding:12px;font-size:12px;margin-top:10px}
+.buildup .bl{display:flex;justify-content:space-between;padding:2.5px 0;color:#3d3a36}
+.buildup .bl b{font-weight:700}
+.buildup .bl.tot{border-top:1px solid #d9d9d9;margin-top:5px;padding-top:7px;font-weight:700}
+.buildup .bl.mkt{color:var(--cw-grey);font-size:11px}
+.mktflag{font-weight:700}
+.mktflag.ok{color:#1b7a43}
+.mktflag.warn{color:#b26a10}
+.howto{margin-top:12px;border:1px dashed var(--cw-border);border-radius:8px}
+.howto summary{padding:10px 12px;font-size:12px;font-weight:700;color:var(--cw-teal);cursor:pointer;user-select:none}
+.howto .hbody{padding:0 14px 14px;font-size:12px;line-height:1.6;color:#3d3a36}
+.howto .hbody h4{font-size:11.5px;margin:10px 0 4px;color:var(--cw-black)}
+.howto .hbody ol,.howto .hbody ul{margin-left:18px}
+.howto .hbody li{margin-bottom:3px}
+.warnbox{background:#fdf1e2;border-left:4px solid var(--cw-gold);padding:8px 12px;border-radius:0 6px 6px 0;font-size:11.5px;margin-top:8px;line-height:1.5}
+.chip{padding:7px 13px;border:2px solid var(--cw-border);border-radius:18px;font-size:12px;cursor:pointer;user-select:none;background:#fff;display:inline-block;margin:0 6px 6px 0}
+.chip:hover{border-color:var(--cw-grey)}
+.chip.sel{background:var(--cw-black);color:#fff;border-color:var(--cw-black);font-weight:700}
+.summarywrap{position:sticky;top:16px;align-self:start}
+.summary{background:var(--cw-black);color:#fff;border-radius:12px;padding:20px;box-shadow:0 8px 24px rgba(0,0,0,.25)}
+.summary h3{font-size:1.05em;border-bottom:2px solid var(--cw-red);padding-bottom:8px;margin-bottom:12px;letter-spacing:.02em}
+.sline{display:flex;justify-content:space-between;gap:8px;font-size:12px;padding:4px 0;color:#e8e7e6}
+.sline .n{flex:1}
+.sline.cat{font-weight:700;color:#fff;border-top:1px solid #4a4742;margin-top:6px;padding-top:8px}
+.sline.sub{padding-left:12px;color:#bdbbb8;font-size:11.5px}
+.stotal{display:flex;justify-content:space-between;font-size:1.35em;font-weight:700;border-top:2px solid var(--cw-red);margin-top:12px;padding-top:12px}
+.smeta{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:14px}
+.smeta .box{background:#3a3733;border-radius:8px;padding:8px;text-align:center}
+.smeta .box b{display:block;font-size:15px;color:#fff}
+.smeta .box span{font-size:9.5px;color:#bdbbb8;text-transform:uppercase;letter-spacing:.04em}
+.sbtns{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+.btn{flex:1;min-width:100px;padding:11px 10px;border:none;border-radius:8px;font-family:inherit;font-weight:700;font-size:12.5px;cursor:pointer;text-align:center}
+.btn-red{background:var(--cw-red);color:#fff}
+.btn-red:hover{background:var(--cw-red-dark)}
+.btn-ghost{background:transparent;color:#fff;border:2px solid #5a5751}
+.btn-ghost:hover{border-color:#fff}
+.btn-teal{background:var(--cw-teal);color:#fff}
+.btn-grey{background:var(--cw-light);color:var(--cw-black);border:1px solid var(--cw-border)}
+.btn-grey:hover{background:#ebebeb}
+.minrow{display:flex;align-items:center;gap:10px;margin-top:10px;background:#3a3733;border-radius:8px;padding:8px 10px;font-size:11px;color:#e8e7e6}
+.minrow input{margin-right:4px}
+.internal-toggle{font-size:11px;color:#bdbbb8;margin-top:12px;display:flex;align-items:center;gap:6px;cursor:pointer;user-select:none}
+.footer{background:var(--cw-black);color:#fff;text-align:center;padding:14px;font-size:11.5px}
+.footer b{font-weight:700}
+.footer a{color:#fff}
+.edu{padding:24px;max-width:1100px;margin:0 auto}
+.edu h2{font-size:1.3em;font-weight:700;border-bottom:2px solid var(--cw-red);padding-bottom:8px;margin:18px 0 12px}
+.edu h3{font-size:1.05em;font-weight:700;margin:16px 0 8px}
+.edu p,.edu li{font-size:13px;line-height:1.65;color:#3d3a36}
+.edu ul,.edu ol{margin:6px 0 12px 22px}
+.edu table{width:100%;border-collapse:collapse;font-size:12px;margin:10px 0 18px}
+.edu th{background:var(--cw-black);color:#fff;padding:8px 10px;text-align:left;font-weight:700}
+.edu td{padding:7px 10px;border-bottom:1px solid var(--cw-border);vertical-align:top;line-height:1.5}
+.edu tr:nth-child(even) td{background:#fafafa}
+.edu .tag{display:inline-block;font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px;margin-right:4px}
+.tag-yes{background:#e7f6ee;color:#1b7a43}
+.tag-no{background:#fde9ea;color:var(--cw-red-dark)}
+.tag-care{background:#fdf1e2;color:#b26a10}
+.ratebook input{width:90px;padding:5px 7px;border:1.5px solid var(--cw-border);border-radius:5px;font-size:12px;font-family:inherit;text-align:right}
+.savemodal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:60;align-items:center;justify-content:center}
+.savemodal.open{display:flex}
+.savebox{background:#fff;border-radius:12px;max-width:560px;width:92%;max-height:80vh;overflow:auto;padding:22px}
+.savebox h3{border-bottom:2px solid var(--cw-red);padding-bottom:8px;margin-bottom:12px;font-size:1.05em}
+.saverow{display:flex;align-items:center;gap:10px;padding:9px 6px;border-bottom:1px solid var(--cw-border);font-size:12.5px}
+.saverow .meta{flex:1}
+.saverow .meta b{display:block}
+.saverow .meta span{color:var(--cw-grey);font-size:11px}
+.saverow button{padding:6px 10px;border-radius:6px;border:1px solid var(--cw-border);background:#fff;font-family:inherit;font-size:11.5px;font-weight:700;cursor:pointer}
+.saverow button:hover{background:var(--cw-light)}
+.saverow button.del{color:var(--cw-red)}
+#printArea{display:none}
+@media print{
+  body *{visibility:hidden}
+  body{background:#fff;padding:0}
+  #printArea,#printArea *{visibility:visible}
+  #printArea{display:block;position:absolute;top:0;left:0;width:100%;padding:32px;font-size:12px}
+}
+.p-head{display:flex;justify-content:space-between;align-items:center;border-bottom:4px solid var(--cw-red);padding-bottom:14px;margin-bottom:18px}
+.p-head img{height:34px}
+.p-head .pt{text-align:right}
+.p-head .pt b{font-size:18px;display:block}
+.p-head .pt span{color:var(--cw-grey);font-size:11px}
+.p-svc{margin-bottom:14px;border:1px solid var(--cw-border);border-radius:8px;padding:12px 14px;page-break-inside:avoid}
+.p-svc h4{font-size:13px;margin-bottom:4px}
+.p-svc p{font-size:11px;color:#3d3a36;line-height:1.55}
+.p-svc .p-price{float:right;font-weight:700;font-size:14px;color:var(--cw-red)}
+.p-total{display:flex;justify-content:space-between;font-size:16px;font-weight:700;border-top:3px solid var(--cw-red);margin-top:14px;padding-top:10px}
+.p-note{font-size:10px;color:var(--cw-grey);margin-top:16px;line-height:1.5}
+.p-table{width:100%;border-collapse:collapse;font-size:10.5px;margin-top:8px}
+.p-table th{background:var(--cw-light);text-align:left;padding:5px 7px;border:1px solid var(--cw-border)}
+.p-table td{padding:5px 7px;border:1px solid var(--cw-border)}
+</style>
 </head>
 <body>
-<div style="background:#FFFFFF;border-bottom:3px solid #D22730;padding:10px 20px;"><img src="https://emailer.emfluence.com/clients/citywide/uploadedfiles/signature_logo.png" alt="City Wide Facility Solutions" style="height:42px;display:block;max-width:90%;object-fit:contain;object-position:left;"></div>
+<div class="container">
+  <div class="logobar"><img src="https://emailer.emfluence.com/clients/citywide/uploadedfiles/signature_logo.png" alt="City Wide Facility Solutions"></div>
+  <div class="header">
+    <h1>Pressure Washing Calculator</h1>
+    <p>Flatwork to Soft Wash: Hot Water, Reclaim &amp; Compliance Pricing for Las Vegas, Northern Nevada &amp; Arizona</p>
+    <div class="hdr-actions">
+      <button class="hdr-btn" id="userBtn" onclick="changeUser()">Set Your Name</button>
+      <button class="hdr-btn" onclick="openSaves()">Saved Work</button>
+    </div>
+  </div>
+  <div class="tabs">
+    <div class="tab active" data-tab="quote" onclick="showTab('quote')">Build a Quote</div>
+    <div class="tab" data-tab="floors" onclick="showTab('floors')">Surfaces &amp; Methods</div>
+    <div class="tab" data-tab="process" onclick="showTab('process')">FSM Playbook</div>
+    <div class="tab" data-tab="rates" onclick="showTab('rates')">Chemicals &amp; Rate Book</div>
+  </div>
 
-    <div class="header">
-        <h1>Nevada Commercial Pressure Washing Calculator</h1>
-        <p>Professional Pricing for Property Management & Commercial Clients - City Wide Facility Solutions</p>
+  <div id="tab-quote">
+    <div class="controlbar">
+      <div class="cfield"><label>Region</label>
+        <select id="region" onchange="recalc()">
+          <option value="lv">Las Vegas</option>
+          <option value="reno">Reno / Sparks</option>
+          <option value="carson">Carson City</option>
+          <option value="tric">TRIC / USA Parkway</option>
+          <option value="az">Arizona Border (Laughlin, Kingman, Havasu)</option>
+        </select>
+      </div>
+      <div class="cfield"><label>Chemicals Provided By</label>
+        <select id="chemProvider" onchange="recalc()">
+          <option value="vendor">Crew Provides (their cost + 15%)</option>
+          <option value="cw">City Wide (tolled at our cost)</option>
+        </select>
+      </div>
+      <div class="cfield"><label>Override Margin % (blank = auto by job size)</label>
+        <input type="number" id="ovMargin" placeholder="auto 32-40" style="width:110px" oninput="recalc()">
+      </div>
+      <div class="cfield"><label>Active Margin</label><div class="marginpill" id="marginPill">auto</div></div>
+      <div class="tricnote" id="regionNote"></div>
     </div>
 
-    <div class="container">
-        <!-- Cost Provider Toggle System -->
-        <div class="cost-provider-section">
-            <h3>Cost Provider Selection</h3>
-            <div class="toggle-grid">
-                <div class="toggle-group">
-                    <label>Labor</label>
-                    <div class="toggle-buttons">
-                        <button class="vendor-btn active" data-category="labor" onclick="toggleProvider('labor', 'vendor')">Vendor</button>
-                        <button class="inhouse-btn" data-category="labor" onclick="toggleProvider('labor', 'inhouse')">In-House</button>
-                    </div>
-                </div>
-                <div class="toggle-group">
-                    <label>Equipment</label>
-                    <div class="toggle-buttons">
-                        <button class="vendor-btn active" data-category="equipment" onclick="toggleProvider('equipment', 'vendor')">Vendor</button>
-                        <button class="inhouse-btn" data-category="equipment" onclick="toggleProvider('equipment', 'inhouse')">In-House</button>
-                    </div>
-                </div>
-                <div class="toggle-group">
-                    <label>Cleaning Chemicals</label>
-                    <div class="toggle-buttons">
-                        <button class="vendor-btn active" data-category="chemicals" onclick="toggleProvider('chemicals', 'vendor')">Vendor</button>
-                        <button class="inhouse-btn" data-category="chemicals" onclick="toggleProvider('chemicals', 'inhouse')">In-House</button>
-                    </div>
-                </div>
-                <div class="toggle-group">
-                    <label>Water Recovery</label>
-                    <div class="toggle-buttons">
-                        <button class="vendor-btn active" data-category="recovery" onclick="toggleProvider('recovery', 'vendor')">Vendor</button>
-                        <button class="inhouse-btn" data-category="recovery" onclick="toggleProvider('recovery', 'inhouse')">In-House</button>
-                    </div>
-                </div>
-                <div class="toggle-group">
-                    <label>Supplies</label>
-                    <div class="toggle-buttons">
-                        <button class="vendor-btn active" data-category="supplies" onclick="toggleProvider('supplies', 'vendor')">Vendor</button>
-                        <button class="inhouse-btn" data-category="supplies" onclick="toggleProvider('supplies', 'inhouse')">In-House</button>
-                    </div>
-                </div>
-            </div>
+    <div class="main">
+      <div>
+        <div class="card">
+          <h2>Job Info</h2>
+          <div class="grid3">
+            <div class="field"><label>Account / Property</label><input id="acct" placeholder="e.g. Summit Ridge Office Park" oninput="autosaveSoon()"></div>
+            <div class="field"><label>Quote Date</label><input type="date" id="qdate"></div>
+            <div class="field"><label>Prepared By</label><input id="prepBy" placeholder="Your name"></div>
+          </div>
         </div>
-
-        <div class="calculator-grid">
-            <!-- Project Details -->
-            <div class="card">
-                <h3>Project Details</h3>
-                <div class="input-grid">
-                    <div class="input-group">
-                        <label for="clientName">Client Name/Company</label>
-                        <input type="text" id="clientName" placeholder="Enter client name or company" value="">
-                    </div>
-                    <div class="input-group">
-                        <label for="preparedBy">Prepared By</label>
-                        <input type="text" id="preparedBy" placeholder="Your name" value="">
-                    </div>
-                    <div class="input-group full-width">
-                        <label for="serviceType">Service Type</label>
-                        <select id="serviceType" onchange="updateCalculations()">
-                            <option value="office_buildings">Office Buildings - Exterior walls, entryways</option>
-                            <option value="retail_centers">Retail Centers - Storefronts, sidewalks, parking</option>
-                            <option value="apartment_complex">Apartment Complex - Buildings, breezeways, pool areas</option>
-                            <option value="warehouse_industrial">Warehouse/Industrial - Large concrete surfaces</option>
-                            <option value="medical_facilities">Medical Facilities - Specialized cleaning requirements</option>
-                            <option value="restaurants">Restaurants - Drive-thrus, dumpster pads, grease removal</option>
-                            <option value="hotels_hospitality">Hotels/Hospitality - High-visibility areas</option>
-                            <option value="parking_structures">Parking Structures - Multi-level, confined spaces</option>
-                            <option value="shopping_centers">Shopping Centers - Large scale, mixed surfaces</option>
-                            <option value="government_facilities">Government Facilities - Compliance requirements</option>
-                            <option value="schools_institutions">Schools/Institutions - Safety considerations</option>
-                            <option value="property_management">Property Management Portfolio - Multiple locations</option>
-                            <option value="post_construction">Post-Construction Cleanup - Final clean before occupancy</option>
-                        </select>
-                    </div>
-                    <div class="input-group">
-                        <label for="totalArea">Total Area (sq ft)</label>
-                        <input type="number" id="totalArea" value="2000" onchange="updateCalculations()">
-                    </div>
-                    <div class="input-group">
-                        <label for="linearFeet">Linear Feet (walls/gutters)</label>
-                        <input type="number" id="linearFeet" value="0" onchange="updateCalculations()">
-                    </div>
-                    <div class="input-group">
-                        <label for="surfaceCondition">Surface Condition</label>
-                        <select id="surfaceCondition" onchange="updateCalculations()">
-                            <option value="good">Good - Light dirt, recent maintenance</option>
-                            <option value="fair">Fair - Moderate buildup, standard wear</option>
-                            <option value="poor">Poor - Heavy buildup, neglected maintenance</option>
-                            <option value="very_poor">Very Poor - Extreme buildup, restoration needed</option>
-                        </select>
-                    </div>
-                    <div class="input-group">
-                        <label for="accessDifficulty">Access Difficulty</label>
-                        <select id="accessDifficulty" onchange="updateCalculations()">
-                            <option value="1.0">Easy - Ground level, open access</option>
-                            <option value="1.15">Moderate - Some obstacles, limited access</option>
-                            <option value="1.3">Difficult - Multiple levels, tight spaces</option>
-                            <option value="1.5">Very Difficult - Extreme heights, complex access</option>
-                        </select>
-                    </div>
-                    <div class="input-group">
-                        <label for="contractType">Contract Type</label>
-                        <select id="contractType" onchange="updateCalculations()">
-                            <option value="1.0">One-Time Service</option>
-                            <option value="0.85">Monthly Maintenance (-15%)</option>
-                            <option value="0.90">Quarterly Maintenance (-10%)</option>
-                            <option value="0.95">Bi-Annual Maintenance (-5%)</option>
-                            <option value="0.98">Annual Maintenance (-2%)</option>
-                        </select>
-                    </div>
-                    <div class="input-group">
-                        <label for="propertyManagerMarkup">Property Manager Markup (%)</label>
-                        <input type="number" id="propertyManagerMarkup" value="15" step="5" onchange="updateCalculations()">
-                    </div>
-                </div>
-
-                <div class="waste-water-notice">
-                    <h5>Nevada Wastewater Compliance Required</h5>
-                    <p>All wastewater must be contained and properly disposed. Cannot discharge to storm drains or waters of the state without NPDES permit. Recovery equipment or sanitary sewer disposal required.</p>
-                </div>
-
-                <div class="checkbox-group">
-                    <div class="checkbox-item">
-                        <input type="checkbox" id="hotWater" onchange="updateCalculations()">
-                        <label for="hotWater">Hot Water Required (+25% productivity)</label>
-                    </div>
-                    <div class="checkbox-item">
-                        <input type="checkbox" id="chemicalStripping" onchange="updateCalculations()">
-                        <label for="chemicalStripping">Chemical Stripping/Degreasing</label>
-                    </div>
-                    <div class="checkbox-item">
-                        <input type="checkbox" id="softWash" onchange="updateCalculations()">
-                        <label for="softWash">Soft Wash (Delicate surfaces)</label>
-                    </div>
-                    <div class="checkbox-item">
-                        <input type="checkbox" id="wasteRecovery" onchange="updateCalculations()">
-                        <label for="wasteRecovery">Wastewater Recovery System</label>
-                    </div>
-                    <div class="checkbox-item">
-                        <input type="checkbox" id="afterHours" onchange="updateCalculations()">
-                        <label for="afterHours">After Hours/Weekend Service</label>
-                    </div>
-                    <div class="checkbox-item">
-                        <input type="checkbox" id="highVolume" onchange="updateCalculations()">
-                        <label for="highVolume">Large Volume Project (10,000+ sq ft)</label>
-                    </div>
-                    <div class="checkbox-item">
-                        <input type="checkbox" id="emergencyService" onchange="updateCalculations()">
-                        <label for="emergencyService">Emergency/Rush Service (+50%)</label>
-                    </div>
-                    <div class="checkbox-item">
-                        <input type="checkbox" id="tenantOccupied" onchange="updateCalculations()">
-                        <label for="tenantOccupied">Tenant-Occupied Building (Extra care)</label>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Labor & Equipment -->
-            <div class="card">
-                <h3>Labor & Equipment Rates</h3>
-                
-                <div class="region-toggle">
-                    <button class="region-btn active" onclick="setRegion('southern')">Southern Nevada</button>
-                    <button class="region-btn" onclick="setRegion('northern')">Northern Nevada</button>
-                </div>
-
-                <div class="ic-breakdown">
-                    <h4>Independent Contractor Rate Breakdown</h4>
-                    <div class="input-group">
-                        <label for="rawLaborRate">Raw Labor Rate ($/hour)</label>
-                        <input type="number" id="rawLaborRate" value="17.00" step="0.25" onchange="updateICBreakdown()">
-                    </div>
-                    <div class="breakdown-grid">
-                        <span>FICA (7.65%):</span>
-                        <span id="ficaAmount">$1.30</span>
-                    </div>
-                    <div class="breakdown-grid">
-                        <span>FUTA (0.60%):</span>
-                        <span id="futaAmount">$0.10</span>
-                    </div>
-                    <div class="breakdown-grid">
-                        <span>Work Comp (2.50%):</span>
-                        <span id="workCompAmount">$0.43</span>
-                    </div>
-                    <div class="breakdown-grid">
-                        <span>General Liability (0.50%):</span>
-                        <span id="glAmount">$0.09</span>
-                    </div>
-                    <div class="breakdown-grid">
-                        <span>State Income Tax (%):</span>
-                        <input type="number" id="stateTaxRate" value="0.00" step="0.01" onchange="updateICBreakdown()">
-                    </div>
-                    <div class="breakdown-grid">
-                        <span>State Tax Amount:</span>
-                        <span id="stateTaxAmount">$0.00</span>
-                    </div>
-                    <div class="breakdown-grid breakdown-total">
-                        <span>Sub Total:</span>
-                        <span id="subTotal">$18.92</span>
-                    </div>
-                    <div class="breakdown-grid">
-                        <span>IC Profit & OH (%):</span>
-                        <input type="number" id="icProfitRate" value="10.0" step="0.5" onchange="updateICBreakdown()">
-                    </div>
-                    <div class="breakdown-grid breakdown-total">
-                        <span><strong>IC Loaded Rate:</strong></span>
-                        <span id="icLoadedRate"><strong>$20.81</strong></span>
-                    </div>
-                </div>
-
-                <div class="input-grid">
-                    <div class="input-group">
-                        <label for="crewSize">Crew Size</label>
-                        <select id="crewSize" onchange="updateCalculations()">
-                            <option value="1">1 Person</option>
-                            <option value="2" selected>2 People</option>
-                            <option value="3">3 People</option>
-                            <option value="4">4 People</option>
-                            <option value="5">5 People</option>
-                            <option value="6">6 People</option>
-                        </select>
-                    </div>
-                    <div class="input-group">
-                        <label for="equipmentRate">Equipment Rate ($/hour)</label>
-                        <input type="number" id="equipmentRate" value="35.00" step="5.00" onchange="updateCalculations()">
-                    </div>
-                    <div class="input-group">
-                        <label for="chemicalCost">Chemical Cost ($/gallon)</label>
-                        <input type="number" id="chemicalCost" value="8.50" step="0.50" onchange="updateCalculations()">
-                    </div>
-                    <div class="input-group">
-                        <label for="cityWideMargin">City Wide Margin (%)</label>
-                        <input type="number" id="cityWideMargin" value="35" step="1" onchange="updateCalculations()">
-                    </div>
-                </div>
-            </div>
+        <div class="card">
+          <h2>Pressure Washing Services</h2>
+          <p style="font-size:11.5px;color:var(--cw-grey);margin-bottom:12px">Measure the surfaces, decide hot or cold water, and switch on each service in this bid. The tool builds the price the same way the Bid Calculator does: crew labor plus payroll burden, chemicals and water, equipment time, an incidentals cushion, the crew company margin, then City Wide margin on top. If you know better than the tool on any number, type over it.</p>
+          <div id="svcList"></div>
         </div>
-
-        <!-- Results Display -->
-        <div class="results-grid">
-            <div class="result-card">
-                <h4>Total Labor Hours</h4>
-                <div class="value" id="totalLaborHours">0.0</div>
-                <p>Including setup/cleanup</p>
-            </div>
-            <div class="result-card">
-                <h4>Labor Cost</h4>
-                <div class="value" id="laborCost">$0</div>
-                <p>Crew rate with load factors</p>
-            </div>
-            <div class="result-card">
-                <h4>Equipment Cost</h4>
-                <div class="value" id="equipmentCost">$0</div>
-                <p>Pressure washer, surface cleaner</p>
-            </div>
-            <div class="result-card">
-                <h4>Material Cost</h4>
-                <div class="value" id="materialCost">$0</div>
-                <p>Chemicals, fuel, supplies</p>
-            </div>
-            <div class="result-card">
-                <h4>Total Cost to CW</h4>
-                <div class="value" id="totalCostToCW">$0</div>
-                <p>All costs before margin</p>
-            </div>
-            <div class="result-card">
-                <h4>Price Per Sq Ft</h4>
-                <div class="value" id="pricePerSqFt">$0.00</div>
-                <p>Client rate per square foot</p>
-            </div>
-            <div class="result-card highlight">
-                <h4>Final Client Price</h4>
-                <div class="value" id="finalClientPrice">$0</div>
-                <p>Total project cost</p>
-            </div>
-            <div class="result-card highlight">
-                <h4>CW Gross Profit</h4>
-                <div class="value" id="cwGrossProfit">$0</div>
-                <p>Margin after all costs</p>
-            </div>
+        <div class="card" id="shopCard" style="display:none">
+          <h2>Chemicals, Water &amp; Pass-Throughs for This Job</h2>
+          <p style="font-size:11.5px;color:var(--cw-grey);margin-bottom:10px">What this job consumes, by item. Seeded from 2026 street prices (J.Racenstein, WindowCleaner.com, bulk chemical suppliers): double-check before committing and update the Rate Book if it moved.</p>
+          <div id="shopList"></div>
         </div>
-
-        <!-- Detailed Breakdown Section -->
-        <div class="breakdown-section">
-            <h3 style="color: var(--primary-blue); margin-bottom: 1.5rem;">Detailed Cost Breakdown</h3>
-            <div class="breakdown-cards">
-                <div class="card">
-                    <h3>Labor Structure</h3>
-                    <div id="laborBreakdown">
-                        <p><strong>Production Rate:</strong> <span id="productionRate">0</span> sq ft/hour</p>
-                        <p><strong>Raw Hours:</strong> <span id="rawHours">0.0</span> hours</p>
-                        <p><strong>Setup/Cleanup:</strong> <span id="setupTime">0.5</span> hours</p>
-                        <p><strong>Crew Size:</strong> <span id="crewSizeDisplay">2</span> people</p>
-                        <p><strong>Total Crew Hours:</strong> <span id="totalCrewHours">0.0</span> hours</p>
-                        <p><strong>Hourly Rate:</strong> <span id="hourlyRateDisplay">$20.81</span></p>
-                    </div>
-                </div>
-                <div class="card">
-                    <h3>Equipment & Materials</h3>
-                    <div id="equipmentBreakdown">
-                        <p><strong>Pressure Washer:</strong> <span id="pressureWasherCost">$0</span></p>
-                        <p><strong>Surface Cleaner:</strong> <span id="surfaceCleanerCost">$0</span></p>
-                        <p><strong>Recovery System:</strong> <span id="recoveryCost">$0</span></p>
-                        <p><strong>Chemicals Used:</strong> <span id="chemicalsUsed">0</span> gallons</p>
-                        <p><strong>Chemical Cost:</strong> <span id="totalChemicalCost">$0</span></p>
-                        <p><strong>Fuel & Supplies:</strong> <span id="fuelSuppliesCost">$0</span></p>
-                    </div>
-                </div>
-                <div class="card">
-                    <h3>Pricing Structure</h3>
-                    <div id="pricingBreakdown">
-                        <p><strong>Subtotal:</strong> <span id="subtotalCost">$0</span></p>
-                        <p><strong>Provider Markups:</strong> <span id="providerMarkups">$0</span></p>
-                        <p><strong>Total Cost to CW:</strong> <span id="totalCostDisplay">$0</span></p>
-                        <p><strong>CW Margin (%):</strong> <span id="marginPercent">35%</span></p>
-                        <p><strong>Margin Amount:</strong> <span id="marginAmount">$0</span></p>
-                        <p><strong>Final Price:</strong> <span id="finalPriceDisplay">$0</span></p>
-                    </div>
-                </div>
-                <div class="card">
-                    <h3>Commercial Contract Details</h3>
-                    <div id="contractBreakdown">
-                        <p><strong>Service Type:</strong> <span id="serviceTypeDisplay">Office Buildings</span></p>
-                        <p><strong>Contract Type:</strong> <span id="contractTypeDisplay">One-Time Service</span></p>
-                        <p><strong>Frequency Discount:</strong> <span id="frequencyDiscount">No Discount</span></p>
-                        <p><strong>Property Manager Markup:</strong> <span id="pmMarkupDisplay">15%</span></p>
-                        <p><strong>Surface Condition:</strong> <span id="conditionDisplay">Good</span></p>
-                        <p><strong>Access Difficulty:</strong> <span id="accessDisplay">Easy</span></p>
-                        <p><strong>Estimated Duration:</strong> <span id="estimatedDuration">0.0</span> hours</p>
-                        <p><strong>Special Requirements:</strong> <span id="specialReqs">Standard Service</span></p>
-                        <p><strong>Wastewater Handling:</strong> <span id="wasteHandling">Recovery Required</span></p>
-                    </div>
-                </div>
-            </div>
+      </div>
+      <div class="summarywrap">
+        <div class="summary">
+          <h3>Quote Summary</h3>
+          <div id="sumLines"><div style="font-size:12px;color:#bdbbb8">Turn on services to build the quote.</div></div>
+          <div class="stotal"><span>Total</span><span id="sumTotal">$0</span></div>
+          <div class="smeta">
+            <div class="box"><b id="mPerSF">$0.00</b><span>Blended / Unit</span></div>
+            <div class="box"><b id="mHours">0.0</b><span>Crew Hours</span></div>
+            <div class="box"><b id="mSvcs">0</b><span>Services</span></div>
+          </div>
+          <div class="minrow" id="minRow" style="display:none">
+            <div style="flex:1" id="minMsg"></div>
+          </div>
+          <div class="minrow">
+            <label style="cursor:pointer"><input type="checkbox" id="minOverride" onchange="recalc()"> Override $250 minimum</label>
+            <input id="minReason" placeholder="Reason (multi-service bid, GM approval...)" style="flex:1;padding:6px 8px;border:none;border-radius:5px;font-family:inherit;font-size:11px" oninput="recalc()">
+          </div>
+          <label class="internal-toggle"><input type="checkbox" id="showInternal" onchange="recalc()"> Show cost &amp; margin (internal)</label>
+          <div class="sbtns">
+            <button class="btn btn-red" onclick="printQuote(false)">Print Client Quote</button>
+            <button class="btn btn-ghost" onclick="printQuote(true)">Print Internal</button>
+            <button class="btn btn-teal" onclick="copyQuote()">Copy Quote Text</button>
+            <button class="btn btn-ghost" onclick="saveWork(true)">Save Work</button>
+          </div>
         </div>
-
-        <!-- Export Options -->
-        <div class="export-section">
-            <h3>Export Options</h3>
-            <p>Generate professional documents for vendors, clients, and internal management</p>
-            <div class="export-buttons">
-                <button class="export-btn vendor" onclick="exportVendorSpecs()">
-                    Export Vendor Specifications
-                </button>
-                <button class="export-btn fsm" onclick="exportFSMSummary()">
-                    Export FSM Job Summary
-                </button>
-            </div>
-        </div>
+      </div>
     </div>
+  </div>
 
-    <script>
-        // Commercial property production rates based on Nevada market research (sq ft per hour)
-        const productionRates = {
-            office_buildings: {
-                exterior_wash: { good: 1000, fair: 800, poor: 600, very_poor: 450 },
-                concrete_surfaces: { good: 1200, fair: 950, poor: 750, very_poor: 550 }
-            },
-            retail_centers: {
-                storefronts: { good: 800, fair: 650, poor: 500, very_poor: 350 },
-                parking_areas: { good: 1400, fair: 1100, poor: 850, very_poor: 650 }
-            },
-            apartment_complex: {
-                building_wash: { good: 900, fair: 700, poor: 550, very_poor: 400 },
-                common_areas: { good: 1100, fair: 850, poor: 650, very_poor: 500 }
-            },
-            warehouse_industrial: {
-                large_surfaces: { good: 1600, fair: 1300, poor: 1000, very_poor: 750 },
-                detailed_areas: { good: 800, fair: 650, poor: 500, very_poor: 350 }
-            },
-            medical_facilities: {
-                specialized_cleaning: { good: 600, fair: 500, poor: 400, very_poor: 300 }
-            },
-            restaurants: {
-                drive_thru: { good: 400, fair: 350, poor: 300, very_poor: 250 },
-                dumpster_pads: { good: 200, fair: 180, poor: 150, very_poor: 120 }
-            },
-            hotels_hospitality: {
-                entrance_areas: { good: 700, fair: 550, poor: 450, very_poor: 350 },
-                pool_areas: { good: 500, fair: 400, poor: 350, very_poor: 250 }
-            },
-            parking_structures: {
-                concrete_cleaning: { good: 1200, fair: 950, poor: 750, very_poor: 550 },
-                multi_level: { good: 800, fair: 650, poor: 500, very_poor: 400 }
-            },
-            shopping_centers: {
-                mixed_surfaces: { good: 1000, fair: 800, poor: 600, very_poor: 450 },
-                high_traffic: { good: 800, fair: 650, poor: 500, very_poor: 350 }
-            },
-            government_facilities: {
-                compliance_cleaning: { good: 700, fair: 550, poor: 450, very_poor: 350 }
-            },
-            schools_institutions: {
-                safe_cleaning: { good: 800, fair: 650, poor: 500, very_poor: 400 }
-            },
-            property_management: {
-                portfolio_service: { good: 1100, fair: 900, poor: 700, very_poor: 500 }
-            },
-            post_construction: {
-                final_clean: { good: 500, fair: 400, poor: 300, very_poor: 200 },
-                heavy_debris: { good: 350, fair: 280, poor: 220, very_poor: 150 }
-            }
-        };
+  <div id="tab-floors" style="display:none"><div class="edu" id="floorsContent"></div></div>
+  <div id="tab-process" style="display:none"><div class="edu" id="processContent"></div></div>
+  <div id="tab-rates" style="display:none"><div class="edu ratebook" id="ratesContent"></div></div>
 
-        let currentRegion = 'southern';
-        let providerSettings = {
-            labor: 'vendor',
-            equipment: 'vendor', 
-            chemicals: 'vendor',
-            recovery: 'vendor',
-            supplies: 'vendor'
-        };
-
-        function setRegion(region) {
-            currentRegion = region;
-            
-            // Update button states
-            document.querySelectorAll('.region-btn').forEach(btn => btn.classList.remove('active'));
-            event.target.classList.add('active');
-            
-            // Update labor rates based on region
-            const rawLaborRateElement = document.getElementById('rawLaborRate');
-            if (rawLaborRateElement) {
-                if (region === 'southern') {
-                    rawLaborRateElement.value = '17.00';
-                } else {
-                    rawLaborRateElement.value = '16.00';
-                }
-            }
-            
-            updateICBreakdown();
-            updateCalculations();
-        }
-
-        function toggleProvider(category, provider) {
-            providerSettings[category] = provider;
-            
-            // Update button states
-            const buttons = document.querySelectorAll(`[data-category="${category}"] button`);
-            buttons.forEach(btn => btn.classList.remove('active'));
-            
-            if (provider === 'vendor') {
-                document.querySelector(`[data-category="${category}"].vendor-btn`).classList.add('active');
-            } else {
-                document.querySelector(`[data-category="${category}"].inhouse-btn`).classList.add('active');
-            }
-            
-            updateCalculations();
-        }
-
-        function updateICBreakdown() {
-            const rawLaborRateElement = document.getElementById('rawLaborRate');
-            const stateTaxRateElement = document.getElementById('stateTaxRate');
-            const icProfitRateElement = document.getElementById('icProfitRate');
-            
-            const rawRate = rawLaborRateElement ? parseFloat(rawLaborRateElement.value) || 17.00 : 17.00;
-            const stateTax = stateTaxRateElement ? parseFloat(stateTaxRateElement.value) || 0.00 : 0.00;
-            const icProfitRate = icProfitRateElement ? parseFloat(icProfitRateElement.value) || 10.0 : 10.0;
-            
-            const fica = rawRate * 0.0765;
-            const futa = rawRate * 0.0060;
-            const workComp = rawRate * 0.0250;
-            const gl = rawRate * 0.0050;
-            const stateTaxAmount = rawRate * (stateTax / 100);
-            
-            const subTotal = rawRate + fica + futa + workComp + gl + stateTaxAmount;
-            const icProfitAmount = subTotal * (icProfitRate / 100);
-            const icLoadedRate = subTotal + icProfitAmount;
-            
-            const ficaAmountElement = document.getElementById('ficaAmount');
-            const futaAmountElement = document.getElementById('futaAmount');
-            const workCompAmountElement = document.getElementById('workCompAmount');
-            const glAmountElement = document.getElementById('glAmount');
-            const stateTaxAmountElement = document.getElementById('stateTaxAmount');
-            const subTotalElement = document.getElementById('subTotal');
-            const icLoadedRateElement = document.getElementById('icLoadedRate');
-            
-            if (ficaAmountElement) ficaAmountElement.textContent = formatCurrencyDetailed(fica);
-            if (futaAmountElement) futaAmountElement.textContent = formatCurrencyDetailed(futa);
-            if (workCompAmountElement) workCompAmountElement.textContent = formatCurrencyDetailed(workComp);
-            if (glAmountElement) glAmountElement.textContent = formatCurrencyDetailed(gl);
-            if (stateTaxAmountElement) stateTaxAmountElement.textContent = formatCurrencyDetailed(stateTaxAmount);
-            if (subTotalElement) subTotalElement.textContent = formatCurrencyDetailed(subTotal);
-            if (icLoadedRateElement) icLoadedRateElement.innerHTML = `<strong>${formatCurrencyDetailed(icLoadedRate)}</strong>`;
-            
-            updateCalculations();
-        }
-
-        function updateCalculations() {
-            const serviceType = document.getElementById('serviceType').value;
-            const totalArea = parseFloat(document.getElementById('totalArea').value) || 0;
-            const linearFeet = parseFloat(document.getElementById('linearFeet').value) || 0;
-            const condition = document.getElementById('surfaceCondition').value;
-            const accessDifficulty = parseFloat(document.getElementById('accessDifficulty').value) || 1.0;
-            const contractType = parseFloat(document.getElementById('contractType').value) || 1.0;
-            const crewSize = parseInt(document.getElementById('crewSize').value);
-            const equipmentRate = parseFloat(document.getElementById('equipmentRate').value);
-            const chemicalCost = parseFloat(document.getElementById('chemicalCost').value);
-            const cityWideMargin = parseFloat(document.getElementById('cityWideMargin').value) / 100;
-            
-            // Property manager markup
-            const pmMarkupElement = document.getElementById('propertyManagerMarkup');
-            const propertyManagerMarkup = pmMarkupElement ? parseFloat(pmMarkupElement.value) / 100 : 0.15;
-            
-            // Calculate production rate
-            let baseRate = getProductionRate(serviceType, condition);
-            let effectiveArea = Math.max(totalArea, linearFeet * 10); // Convert linear feet to approximate sq ft
-            
-            // Apply commercial-specific modifiers
-            if (document.getElementById('hotWater') && document.getElementById('hotWater').checked) baseRate *= 1.25;
-            if (document.getElementById('softWash') && document.getElementById('softWash').checked) baseRate *= 0.9;
-            if (document.getElementById('highVolume') && document.getElementById('highVolume').checked && effectiveArea > 10000) baseRate *= 1.15;
-            if (document.getElementById('tenantOccupied') && document.getElementById('tenantOccupied').checked) baseRate *= 0.85;
-            
-            baseRate = baseRate / accessDifficulty;
-            
-            // Calculate hours with minimum setup
-            const rawHours = effectiveArea / baseRate;
-            const wasteRecoveryElement = document.getElementById('wasteRecovery');
-            const setupTime = Math.max(0.5, 0.3 + (wasteRecoveryElement && wasteRecoveryElement.checked ? 0.2 : 0));
-            const totalHours = rawHours + setupTime;
-            const totalCrewHours = totalHours * crewSize;
-            
-            // Calculate costs with commercial considerations
-            const icLoadedRate = getICLoadedRate();
-            const laborCost = calculateLaborCost(totalCrewHours, icLoadedRate);
-            const equipmentCost = calculateEquipmentCost(totalHours, equipmentRate);
-            const materialCost = calculateMaterialCost(effectiveArea, chemicalCost);
-            
-            const subtotal = laborCost + equipmentCost + materialCost;
-            
-            // Apply contract type discount
-            let totalCostToCW = subtotal * contractType;
-            
-            let finalPrice = totalCostToCW / (1 - cityWideMargin);
-            
-            // Commercial-specific premiums
-            const afterHoursElement = document.getElementById('afterHours');
-            if (afterHoursElement && afterHoursElement.checked) {
-                finalPrice *= 1.25;
-            }
-            const emergencyElement = document.getElementById('emergencyService');
-            if (emergencyElement && emergencyElement.checked) {
-                finalPrice *= 1.50;
-            }
-            
-            // Property manager markup (if applicable)
-            const finalPriceWithPM = finalPrice * (1 + propertyManagerMarkup);
-            
-            const grossProfit = finalPrice - totalCostToCW;
-            const pricePerSqFt = finalPrice / effectiveArea;
-            
-            // Update displays with commercial considerations
-            document.getElementById('totalLaborHours').textContent = totalHours.toFixed(1);
-            document.getElementById('laborCost').textContent = formatCurrency(laborCost);
-            document.getElementById('equipmentCost').textContent = formatCurrency(equipmentCost);
-            document.getElementById('materialCost').textContent = formatCurrency(materialCost);
-            document.getElementById('totalCostToCW').textContent = formatCurrency(totalCostToCW);
-            document.getElementById('pricePerSqFt').textContent = formatCurrencyDetailed(pricePerSqFt);
-            document.getElementById('finalClientPrice').textContent = formatCurrency(finalPriceWithPM);
-            document.getElementById('cwGrossProfit').textContent = formatCurrency(grossProfit);
-            
-            updateBreakdownDisplays(totalHours, rawHours, setupTime, crewSize, totalCrewHours, 
-                                  icLoadedRate, equipmentCost, materialCost, subtotal, 
-                                  totalCostToCW, cityWideMargin * 100, grossProfit, finalPriceWithPM, 
-                                  baseRate, serviceType, condition, accessDifficulty, contractType, propertyManagerMarkup);
-        }
-
-        function getProductionRate(serviceType, condition) {
-            const rates = productionRates[serviceType];
-            if (!rates) return 800; // Default commercial rate
-            
-            // Select appropriate method based on service type and options
-            let method = 'exterior_wash';
-            const highVolumeElement = document.getElementById('highVolume');
-            
-            if (serviceType === 'warehouse_industrial') {
-                method = (highVolumeElement && highVolumeElement.checked) ? 'large_surfaces' : 'detailed_areas';
-            } else if (serviceType === 'restaurants') {
-                method = 'drive_thru'; // Default for restaurants
-            } else if (serviceType === 'parking_structures') {
-                method = 'concrete_cleaning';
-            } else if (serviceType === 'retail_centers') {
-                method = 'storefronts';
-            } else if (serviceType === 'apartment_complex') {
-                method = 'building_wash';
-            } else if (serviceType === 'medical_facilities') {
-                method = 'specialized_cleaning';
-            } else if (serviceType === 'hotels_hospitality') {
-                method = 'entrance_areas';
-            } else if (serviceType === 'shopping_centers') {
-                method = 'mixed_surfaces';
-            } else if (serviceType === 'government_facilities') {
-                method = 'compliance_cleaning';
-            } else if (serviceType === 'schools_institutions') {
-                method = 'safe_cleaning';
-            } else if (serviceType === 'property_management') {
-                method = 'portfolio_service';
-            } else if (serviceType === 'post_construction') {
-                method = condition === 'very_poor' || condition === 'poor' ? 'heavy_debris' : 'final_clean';
-            }
-            
-            return rates[method] ? rates[method][condition] : rates[Object.keys(rates)[0]][condition] || 800;
-        }
-
-        function getICLoadedRate() {
-            const rawLaborRateElement = document.getElementById('rawLaborRate');
-            const stateTaxRateElement = document.getElementById('stateTaxRate');
-            const icProfitRateElement = document.getElementById('icProfitRate');
-            
-            const rawRate = rawLaborRateElement ? parseFloat(rawLaborRateElement.value) || 17.00 : 17.00;
-            const stateTax = stateTaxRateElement ? parseFloat(stateTaxRateElement.value) || 0.00 : 0.00;
-            const icProfitRate = icProfitRateElement ? parseFloat(icProfitRateElement.value) || 10.0 : 10.0;
-            
-            const fica = rawRate * 0.0765;
-            const futa = rawRate * 0.0060;
-            const workComp = rawRate * 0.0250;
-            const gl = rawRate * 0.0050;
-            const stateTaxAmount = rawRate * (stateTax / 100);
-            
-            const subTotal = rawRate + fica + futa + workComp + gl + stateTaxAmount;
-            
-            if (providerSettings.labor === 'inhouse') {
-                return subTotal; // No IC profit for in-house
-            } else {
-                const icProfitAmount = subTotal * (icProfitRate / 100);
-                return subTotal + icProfitAmount;
-            }
-        }
-
-        function calculateLaborCost(totalCrewHours, hourlyRate) {
-            const baseCost = totalCrewHours * hourlyRate;
-            const cityWideMargin = parseFloat(document.getElementById('cityWideMargin').value) / 100;
-            
-            if (providerSettings.labor === 'vendor') {
-                return baseCost / (1 - cityWideMargin);
-            } else {
-                return baseCost / (1 - cityWideMargin);
-            }
-        }
-
-        function calculateEquipmentCost(hours, rate) {
-            const baseCost = hours * rate;
-            const cityWideMargin = parseFloat(document.getElementById('cityWideMargin').value) / 100;
-            
-            if (providerSettings.equipment === 'vendor') {
-                const costWithICProfit = baseCost * 1.10;
-                return costWithICProfit / (1 - cityWideMargin);
-            } else {
-                return baseCost / (1 - cityWideMargin);
-            }
-        }
-
-        function calculateMaterialCost(area, costPerGallon) {
-            // Coverage rates: 1 gallon per 500 sq ft for standard cleaning (more efficient)
-            let coverage = 500;
-            const chemicalStrippingElement = document.getElementById('chemicalStripping');
-            const softWashElement = document.getElementById('softWash');
-            
-            if (chemicalStrippingElement && chemicalStrippingElement.checked) coverage = 300;
-            if (softWashElement && softWashElement.checked) coverage = 700;
-            
-            const gallonsNeeded = Math.max(0.5, area / coverage);
-            const baseCost = gallonsNeeded * costPerGallon;
-            
-            // Add fuel and supplies (20% of chemical cost)
-            const totalMaterialCost = baseCost * 1.2;
-            const cityWideMargin = parseFloat(document.getElementById('cityWideMargin').value) / 100;
-            
-            if (providerSettings.chemicals === 'vendor') {
-                const costWithICProfit = totalMaterialCost * 1.10;
-                return costWithICProfit / (1 - cityWideMargin);
-            } else {
-                return totalMaterialCost / (1 - cityWideMargin);
-            }
-        }
-
-        function updateBreakdownDisplays(totalHours, rawHours, setupTime, crewSize, totalCrewHours, 
-                                       hourlyRate, equipmentCost, materialCost, subtotal, 
-                                       totalCostToCW, marginPercent, grossProfit, finalPrice, 
-                                       productionRate, serviceType, condition, accessDifficulty, 
-                                       contractType, propertyManagerMarkup) {
-            
-            document.getElementById('productionRate').textContent = Math.round(productionRate);
-            document.getElementById('rawHours').textContent = rawHours.toFixed(1);
-            document.getElementById('setupTime').textContent = setupTime.toFixed(1);
-            document.getElementById('crewSizeDisplay').textContent = crewSize;
-            document.getElementById('totalCrewHours').textContent = totalCrewHours.toFixed(1);
-            document.getElementById('hourlyRateDisplay').textContent = formatCurrencyDetailed(hourlyRate);
-            
-            document.getElementById('pressureWasherCost').textContent = formatCurrency(equipmentCost * 0.6);
-            document.getElementById('surfaceCleanerCost').textContent = formatCurrency(equipmentCost * 0.3);
-            document.getElementById('recoveryCost').textContent = formatCurrency(equipmentCost * 0.1);
-            document.getElementById('chemicalsUsed').textContent = (materialCost / 25).toFixed(1);
-            document.getElementById('totalChemicalCost').textContent = formatCurrency(materialCost * 0.8);
-            document.getElementById('fuelSuppliesCost').textContent = formatCurrency(materialCost * 0.2);
-            
-            document.getElementById('subtotalCost').textContent = formatCurrency(subtotal);
-            document.getElementById('providerMarkups').textContent = formatCurrency(totalCostToCW - subtotal);
-            document.getElementById('totalCostDisplay').textContent = formatCurrency(totalCostToCW);
-            document.getElementById('marginPercent').textContent = marginPercent.toFixed(0) + '%';
-            document.getElementById('marginAmount').textContent = formatCurrency(grossProfit);
-            document.getElementById('finalPriceDisplay').textContent = formatCurrency(finalPrice);
-            
-            // Commercial-specific updates
-            document.getElementById('serviceTypeDisplay').textContent = getServiceTypeDisplay(serviceType);
-            document.getElementById('conditionDisplay').textContent = condition.replace('_', ' ');
-            document.getElementById('accessDisplay').textContent = getAccessText(accessDifficulty);
-            document.getElementById('estimatedDuration').textContent = totalHours.toFixed(1);
-            
-            // Update special requirements for commercial
-            const specials = [];
-            const hotWaterElement = document.getElementById('hotWater');
-            const chemicalStrippingElement = document.getElementById('chemicalStripping');
-            const softWashElement = document.getElementById('softWash');
-            const wasteRecoveryElement = document.getElementById('wasteRecovery');
-            const afterHoursElement = document.getElementById('afterHours');
-            const emergencyServiceElement = document.getElementById('emergencyService');
-            const tenantOccupiedElement = document.getElementById('tenantOccupied');
-            const highVolumeElement = document.getElementById('highVolume');
-            
-            if (hotWaterElement && hotWaterElement.checked) specials.push('Hot Water');
-            if (chemicalStrippingElement && chemicalStrippingElement.checked) specials.push('Chemical Stripping');
-            if (softWashElement && softWashElement.checked) specials.push('Soft Wash');
-            if (wasteRecoveryElement && wasteRecoveryElement.checked) specials.push('Waste Recovery');
-            if (afterHoursElement && afterHoursElement.checked) specials.push('After Hours');
-            if (emergencyServiceElement && emergencyServiceElement.checked) specials.push('Emergency Service');
-            if (tenantOccupiedElement && tenantOccupiedElement.checked) specials.push('Tenant Occupied');
-            if (highVolumeElement && highVolumeElement.checked) specials.push('High Volume');
-            
-            document.getElementById('specialReqs').textContent = specials.length ? specials.join(', ') : 'Standard Service';
-            document.getElementById('wasteHandling').textContent = (wasteRecoveryElement && wasteRecoveryElement.checked) ? 
-                'Mobile Recovery System' : 'Sanitary Sewer Disposal Required';
-            
-            // Commercial contract information
-            const contractInfo = getContractInfo(contractType, propertyManagerMarkup);
-            document.getElementById('contractTypeDisplay').textContent = contractInfo.type;
-            document.getElementById('frequencyDiscount').textContent = contractInfo.discount;
-            document.getElementById('pmMarkupDisplay').textContent = (propertyManagerMarkup * 100).toFixed(0) + '%';
-        }
-        
-        function getServiceTypeDisplay(serviceType) {
-            const displayNames = {
-                office_buildings: 'Office Buildings',
-                retail_centers: 'Retail Centers', 
-                apartment_complex: 'Apartment Complex',
-                warehouse_industrial: 'Warehouse/Industrial',
-                medical_facilities: 'Medical Facilities',
-                restaurants: 'Restaurants',
-                hotels_hospitality: 'Hotels/Hospitality',
-                parking_structures: 'Parking Structures',
-                shopping_centers: 'Shopping Centers',
-                government_facilities: 'Government Facilities',
-                schools_institutions: 'Schools/Institutions',
-                property_management: 'Property Management Portfolio',
-                post_construction: 'Post-Construction Cleanup'
-            };
-            return displayNames[serviceType] || serviceType.replace('_', ' ');
-        }
-        
-        function getContractInfo(contractType, propertyManagerMarkup) {
-            let type = 'One-Time Service';
-            let discount = 'No Discount';
-            
-            if (contractType === 0.85) {
-                type = 'Monthly Recurring';
-                discount = '15% Discount Applied';
-            } else if (contractType === 0.90) {
-                type = 'Quarterly Recurring';
-                discount = '10% Discount Applied';
-            } else if (contractType === 0.95) {
-                type = 'Bi-Annual Recurring';
-                discount = '5% Discount Applied';
-            } else if (contractType === 0.98) {
-                type = 'Annual Recurring';
-                discount = '2% Discount Applied';
-            }
-            
-            return { type, discount };
-        }
-
-        function getAccessText(difficulty) {
-            if (difficulty == 1.0) return 'Easy - Ground level';
-            if (difficulty == 1.15) return 'Moderate - Some obstacles';
-            if (difficulty == 1.3) return 'Difficult - Multiple levels';
-            if (difficulty == 1.5) return 'Very Difficult - Extreme access';
-            return 'Custom';
-        }
-
-        function formatCurrency(amount) {
-            return new Intl.NumberFormat('en-US', {
-                style: 'currency',
-                currency: 'USD',
-                minimumFractionDigits: 0,
-                maximumFractionDigits: 0
-            }).format(amount);
-        }
-
-        function formatCurrencyDetailed(amount) {
-            return new Intl.NumberFormat('en-US', {
-                style: 'currency',
-                currency: 'USD',
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2
-            }).format(amount);
-        }
-
-        function exportVendorSpecs() {
-            const clientName = document.getElementById('clientName').value || 'Not Specified';
-            const preparedBy = document.getElementById('preparedBy').value || 'Not Specified';
-            const serviceType = document.getElementById('serviceTypeDisplay').textContent;
-            const totalArea = document.getElementById('totalArea').value;
-            const linearFeet = document.getElementById('linearFeet').value;
-            const condition = document.getElementById('conditionDisplay').textContent;
-            const totalHours = document.getElementById('totalLaborHours').textContent;
-            const crewSize = document.getElementById('crewSizeDisplay').textContent;
-            const specialReqs = document.getElementById('specialReqs').textContent;
-            const wasteHandling = document.getElementById('wasteHandling').textContent;
-            const estimatedDuration = document.getElementById('estimatedDuration').textContent;
-            
-            const rtfContent = `{\\rtf1\\ansi\\deff0 {\\fonttbl {\\f0 Times New Roman;}}
-{\\colortbl;\\red0\\green0\\blue0;\\red0\\green0\\blue255;\\red255\\green0\\blue0;}
-\\f0\\fs24
-{\\pard\\b\\fs32 VENDOR SPECIFICATIONS - PRESSURE WASHING SERVICE\\par}
-\\par
-{\\pard\\b Prepared For:\\b0  ${clientName}\\par}
-{\\pard\\b Prepared By:\\b0  ${preparedBy}\\par}
-{\\pard\\b Date Generated:\\b0  ${new Date().toLocaleString()}\\par}
-\\par
-{\\pard\\cf2\\b\\fs28 PROJECT SCOPE\\cf0\\par}
-\\par
-{\\pard\\b Service Type:\\b0  ${serviceType}\\par}
-{\\pard\\b Total Area:\\b0  ${totalArea} square feet\\par}
-${linearFeet > 0 ? `{\\pard\\b Linear Feet:\\b0  ${linearFeet} feet\\par}` : ''}
-{\\pard\\b Surface Condition:\\b0  ${condition}\\par}
-{\\pard\\b Estimated Duration:\\b0  ${estimatedDuration} hours\\par}
-\\par
-{\\pard\\cf2\\b\\fs28 LABOR REQUIREMENTS\\cf0\\par}
-\\par
-{\\pard\\b Total Labor Hours:\\b0  ${totalHours} hours\\par}
-{\\pard\\b Recommended Crew Size:\\b0  ${crewSize} technicians\\par}
-{\\pard\\b Experience Level Required:\\b0  Commercial pressure washing certification preferred\\par}
-\\par
-{\\pard\\cf2\\b\\fs28 EQUIPMENT REQUIREMENTS\\cf0\\par}
-\\par
-{\\pard\\b Primary Equipment:\\par}
-- Commercial pressure washer (minimum 3000 PSI, 4 GPM)\\par
-- Surface cleaner (20-24 inch for efficiency)\\par
-- Extension wands and appropriate nozzles\\par
-- Safety equipment (PPE, cones, signage)\\par}
-${document.getElementById('hotWater').checked ? '{\\pard - Hot water unit required (140-180 degrees F)\\par}' : ''}
-${document.getElementById('wasteRecovery').checked ? '{\\pard - Wastewater recovery system with vacuum\\par}' : ''}
-${document.getElementById('softWash').checked ? '{\\pard - Soft wash system with low-pressure applicator\\par}' : ''}
-\\par
-{\\pard\\cf2\\b\\fs28 MATERIAL REQUIREMENTS\\cf0\\par}
-\\par
-{\\pard\\b Cleaning Chemicals:\\par}
-- Commercial-grade detergent/degreaser\\par
-- Appropriate dilution ratios for surface type\\par}
-${document.getElementById('chemicalStripping').checked ? '- Heavy-duty stripping agent\\par' : ''}
-{\\pard\\b Estimated Chemical Usage:\\b0  ${(parseFloat(totalArea) / 500).toFixed(1)} gallons\\par}
-\\par
-{\\pard\\cf2\\b\\fs28 SPECIAL REQUIREMENTS\\cf0\\par}
-\\par
-{\\pard\\b Special Services:\\b0  ${specialReqs}\\par}
-{\\pard\\b Wastewater Handling:\\b0  ${wasteHandling}\\par}
-\\par
-{\\pard\\cf2\\b\\fs28 NEVADA COMPLIANCE REQUIREMENTS\\cf0\\par}
-\\par
-{\\pard - Must comply with Nevada water discharge regulations\\par
-- Cannot discharge to storm drains without NPDES permit\\par
-- Wastewater must be contained and properly disposed\\par
-- Follow all local environmental protection guidelines\\par}
-\\par
-{\\pard\\cf2\\b\\fs28 QUALITY STANDARDS\\cf0\\par}
-\\par
-{\\pard - All surfaces must be uniformly cleaned\\par
-- No damage to landscaping or property\\par
-- Complete removal of dirt, mold, mildew, and stains\\par
-- Final inspection required before completion\\par
-- Photo documentation of before/after conditions\\par}
-\\par
-{\\pard\\cf2\\b\\fs28 SAFETY REQUIREMENTS\\cf0\\par}
-\\par
-{\\pard - Valid liability insurance required (minimum $1M)\\par
-- Workers compensation coverage\\par
-- OSHA compliance for all crew members\\par
-- Proper PPE usage at all times\\par
-- Traffic control measures when applicable\\par}
-\\par
-{\\pard\\b\\fs24 Note: This specification is for vendor use only. Do not share pricing information.\\par}
-{\\pard\\fs20 Document prepared by ${preparedBy} for ${clientName}\\par}
-}`;
-
-            downloadRTF(rtfContent, 'vendor-specifications.rtf');
-        }
-
-        function exportFSMSummary() {
-            // Gather all data
-            const clientName = document.getElementById('clientName').value || 'Not Specified';
-            const preparedBy = document.getElementById('preparedBy').value || 'Not Specified';
-            const serviceType = document.getElementById('serviceTypeDisplay').textContent;
-            const totalArea = document.getElementById('totalArea').value;
-            const linearFeet = document.getElementById('linearFeet').value;
-            const condition = document.getElementById('conditionDisplay').textContent;
-            const totalHours = document.getElementById('totalLaborHours').textContent;
-            const crewSize = document.getElementById('crewSizeDisplay').textContent;
-            const laborCost = document.getElementById('laborCost').textContent;
-            const equipmentCost = document.getElementById('equipmentCost').textContent;
-            const materialCost = document.getElementById('materialCost').textContent;
-            const totalCostToCW = document.getElementById('totalCostToCW').textContent;
-            const finalClientPrice = document.getElementById('finalClientPrice').textContent;
-            const cwGrossProfit = document.getElementById('cwGrossProfit').textContent;
-            const pricePerSqFt = document.getElementById('pricePerSqFt').textContent;
-            const marginPercent = document.getElementById('marginPercent').textContent;
-            const contractType = document.getElementById('contractTypeDisplay').textContent;
-            const specialReqs = document.getElementById('specialReqs').textContent;
-            const wasteHandling = document.getElementById('wasteHandling').textContent;
-            const accessDisplay = document.getElementById('accessDisplay').textContent;
-            const pmMarkup = document.getElementById('pmMarkupDisplay').textContent;
-            
-            // Calculate vendor payment
-            const clientPriceNum = parseFloat(finalClientPrice.replace(/[^0-9.-]+/g,""));
-            const cwProfitNum = parseFloat(cwGrossProfit.replace(/[^0-9.-]+/g,""));
-            const vendorPayment = clientPriceNum - cwProfitNum;
-            
-            const rtfContent = `{\\rtf1\\ansi\\deff0 {\\fonttbl {\\f0 Times New Roman;}}
-{\\colortbl;\\red0\\green0\\blue0;\\red0\\green0\\blue255;\\red255\\green0\\blue0;\\red0\\green128\\blue0;}
-\\f0\\fs24
-{\\pard\\b\\fs36\\qc FACILITY SOLUTIONS MANAGER - COMPLETE JOB SUMMARY\\par}
-{\\pard\\b\\fs28\\qc COMMERCIAL PRESSURE WASHING SERVICE\\par}
-\\par
-{\\pard\\b Prepared For:\\b0  ${clientName}\\par}
-{\\pard\\b Prepared By:\\b0  ${preparedBy}\\par}
-{\\pard\\b Date Generated:\\b0  ${new Date().toLocaleString()}\\par}
-{\\pard Location: Nevada\\par}
-\\par
-{\\pard\\cf2\\b\\fs28 JOB OVERVIEW\\cf0\\par}
-\\par
-{\\pard\\b Client:\\b0  ${clientName}\\par}
-{\\pard\\b Service Type:\\b0  ${serviceType}\\par}
-{\\pard\\b Contract Type:\\b0  ${contractType}\\par}
-{\\pard\\b Total Area:\\b0  ${totalArea} square feet\\par}
-${linearFeet > 0 ? `{\\pard\\b Linear Feet:\\b0  ${linearFeet} feet\\par}` : ''}
-{\\pard\\b Surface Condition:\\b0  ${condition}\\par}
-{\\pard\\b Access Difficulty:\\b0  ${accessDisplay}\\par}
-{\\pard\\b Labor Hours Required:\\b0  ${totalHours} hours\\par}
-{\\pard\\b Recommended Crew Size:\\b0  ${crewSize} technicians\\par}
-{\\pard\\b Special Requirements:\\b0  ${specialReqs}\\par}
-\\par
-{\\pard\\cf3\\b\\fs28 PRICING SUMMARY\\cf0\\par}
-\\par
-{\\pard\\cf3\\b\\fs26 Final Client Price: ${finalClientPrice}\\cf0\\par}
-{\\pard\\b Total Vendor Payment:\\b0  ${formatCurrency(vendorPayment)}\\par}
-{\\pard\\cf4\\b City Wide Gross Profit:\\b0  ${cwGrossProfit}\\cf0\\par}
-{\\pard\\b City Wide Margin:\\b0  ${marginPercent}\\par}
-{\\pard\\b Price Per Square Foot:\\b0  ${pricePerSqFt}\\par}
-${pmMarkup !== '0%' ? `{\\pard\\b Property Manager Markup:\\b0  ${pmMarkup}\\par}` : ''}
-\\par
-{\\pard\\cf2\\b\\fs28 VENDOR PAYMENT STRUCTURE\\cf0\\par}
-\\par
-{\\pard\\b Cost Provider Selections:\\par}
-- Labor: ${providerSettings.labor === 'vendor' ? 'Vendor Provided' : 'In-House'}\\par
-- Equipment: ${providerSettings.equipment === 'vendor' ? 'Vendor Provided' : 'In-House'}\\par
-- Chemicals: ${providerSettings.chemicals === 'vendor' ? 'Vendor Provided' : 'In-House'}\\par
-- Recovery System: ${providerSettings.recovery === 'vendor' ? 'Vendor Provided' : 'In-House'}\\par
-- Supplies: ${providerSettings.supplies === 'vendor' ? 'Vendor Provided' : 'In-House'}\\par}
-\\par
-{\\pard\\b Component Costs (to City Wide):\\par}
-- Labor Cost: ${laborCost}\\par
-- Equipment Cost: ${equipmentCost}\\par
-- Material Cost: ${materialCost}\\par
-- Total Cost to CW: ${totalCostToCW}\\par}
-\\par
-{\\pard\\cf2\\b\\fs28 SITE CONDITIONS & CHALLENGES\\cf0\\par}
-\\par
-{\\pard\\b Condition Assessment:\\b0  ${condition}\\par}
-{\\pard\\b Access Factors:\\b0  ${accessDisplay}\\par}
-{\\pard\\b Wastewater Requirements:\\b0  ${wasteHandling}\\par}
-${document.getElementById('afterHours').checked ? '{\\pard\\b Schedule Constraint:\\b0  After hours service required\\par}' : ''}
-${document.getElementById('tenantOccupied').checked ? '{\\pard\\b Occupancy Status:\\b0  Tenant-occupied - extra care required\\par}' : ''}
-${document.getElementById('emergencyService').checked ? '{\\pard\\b Service Priority:\\b0  EMERGENCY/RUSH SERVICE\\par}' : ''}
-\\par
-{\\pard\\cf2\\b\\fs28 VENDOR QUALIFICATION QUESTIONS\\cf0\\par}
-\\par
-{\\pard 1. Do you have commercial pressure washing experience in Nevada?\\par
-2. Can you provide proof of liability insurance (minimum $1M)?\\par
-3. Do you have wastewater recovery equipment available?\\par
-4. Are your technicians trained in OSHA safety standards?\\par
-5. Can you provide references from similar commercial projects?\\par
-6. Do you have hot water pressure washing capability?\\par
-7. Are you familiar with Nevada environmental discharge regulations?\\par}
-\\par
-{\\pard\\cf2\\b\\fs28 CLIENT COMMUNICATION POINTS\\cf0\\par}
-\\par
-{\\pard\\b Pre-Service Requirements:\\par}
-- Notify tenants/occupants 24-48 hours in advance\\par
-- Ensure all windows and doors are closed\\par
-- Remove or protect sensitive outdoor items\\par
-- Provide access to water source and electrical outlets\\par
-- Clear vehicles from service areas\\par}
-\\par
-{\\pard\\b Service Process Expectations:\\par}
-- Professional crew will arrive in marked vehicles\\par
-- Safety cones and signage will be placed\\par
-- Service duration approximately ${totalHours} hours\\par
-- Wastewater will be properly contained and disposed\\par
-- Final walkthrough with property representative\\par}
-\\par
-{\\pard\\b Post-Service Care:\\par}
-- Allow surfaces to dry completely (2-4 hours)\\par
-- Inspect work and report any concerns immediately\\par
-- Schedule follow-up services for optimal maintenance\\par}
-\\par
-{\\pard\\cf2\\b\\fs28 SCHEDULING CONSIDERATIONS\\cf0\\par}
-\\par
-{\\pard\\b Optimal Timing:\\par}
-- Best performed in dry weather conditions\\par
-- Avoid freezing temperatures (below 40 degrees F)\\par
-- Morning service minimizes tenant disruption\\par
-- Allow 24 hours drying time before heavy use\\par}
-\\par
-{\\pard\\b Weather Dependencies:\\par}
-- Cannot perform in rain or high winds\\par
-- Extreme heat may affect chemical effectiveness\\par
-- Reschedule if weather conditions unsafe\\par}
-\\par
-{\\pard\\cf2\\b\\fs28 QUALITY ASSURANCE CHECKLIST\\cf0\\par}
-\\par
-{\\pard Before Service:\\par
-[ ] Vendor insurance verified\\par
-[ ] Site access confirmed\\par
-[ ] Tenant notifications sent\\par
-[ ] Water/power sources identified\\par
-[ ] Wastewater disposal plan confirmed\\par}
-\\par
-{\\pard During Service:\\par
-[ ] Safety measures in place\\par
-[ ] Proper chemical dilution verified\\par
-[ ] Uniform cleaning coverage\\par
-[ ] No property damage\\par
-[ ] Wastewater properly contained\\par}
-\\par
-{\\pard After Service:\\par
-[ ] All areas cleaned to standard\\par
-[ ] Photos documented (before/after)\\par
-[ ] Client walkthrough completed\\par
-[ ] Invoice matches quoted price\\par
-[ ] Follow-up service scheduled (if applicable)\\par}
-\\par
-{\\pard\\cf2\\b\\fs28 PROFITABILITY ANALYSIS\\cf0\\par}
-\\par
-{\\pard\\cf3\\b Revenue Breakdown:\\cf0\\par
-Client (${clientName}) Pays: ${finalClientPrice}\\par
-Vendor Receives: ${formatCurrency(vendorPayment)}\\par
-\\cf4\\b City Wide Profit: ${cwGrossProfit}\\cf0\\par}
-\\par
-{\\pard\\b Efficiency Targets:\\par
-- Complete within ${totalHours} hours\\par
-- Minimize chemical usage through proper dilution\\par
-- Optimize crew size for productivity\\par
-- Reduce callbacks through quality work\\par}
-\\par
-{\\pard\\b Key Cost Drivers:\\par
-- Surface condition (${condition})\\par
-- Access difficulty (${accessDisplay})\\par
-- Special requirements (${specialReqs})\\par
-- Contract frequency discounts applied\\par}
-\\par
-{\\pard\\b\\fs24 This document contains confidential pricing information. For internal FSM use only.\\par}
-{\\pard\\fs20 Prepared by ${preparedBy} for ${clientName} on ${new Date().toLocaleDateString()}\\par}
-}`;
-
-            downloadRTF(rtfContent, 'fsm-job-summary.rtf');
-        }
-
-        function downloadRTF(content, filename) {
-            const blob = new Blob([content], { type: 'application/rtf' });
-            const url = window.URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = filename;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            window.URL.revokeObjectURL(url);
-        }
-
-        function exportClientInstructions() {
-            // Removed - not needed per user request
-        }
-
-        // Initialize calculator
-        updateICBreakdown();
-        updateCalculations();
-    </script>
-
-<div style="text-align:center;padding:18px 12px 24px;font-family:Verdana, &#39;Liberation Sans&#39;, &#39;DejaVu Sans&#39;, Geneva, Tahoma, sans-serif;font-size:11px;color:#636466;">City Wide Facility Solutions | <a href="https://www.gocitywide.com" style="color:#D22730;font-weight:bold;">GoCityWide.com</a></div>
-<!-- CW Save Results to Google Sheets -->
-<div id="cwSaveBar" style="position:fixed;bottom:18px;right:18px;z-index:9999;font-family:Verdana,'Liberation Sans','DejaVu Sans',Geneva,Tahoma,sans-serif;">
-<button id="cwSaveBtn" type="button" style="background:#D22730;color:#FFFFFF;border:none;border-radius:6px;padding:12px 20px;font-size:13px;font-weight:bold;font-family:inherit;cursor:pointer;box-shadow:0 4px 12px rgba(0,0,0,0.25);">Save Results</button>
+  <div class="footer"><b>City Wide Facility Solutions</b> of Las Vegas &amp; Northern Nevada. Internal pricing tool. GoCityWide.com</div>
 </div>
-<script>
-(function(){
-  var CW_TOOL='pressurewashing';
-  var CW_HOOK='https://script.google.com/macros/s/AKfycbyZz6vEqjzdq0v15FVMfnrC5-lC_urvHe9aUI8LMaWHv_muqLGximMocH0_6IwB3mZOZQ/exec';
-  function txt(el){return (el.innerText||'').replace(/\s+/g,' ').trim();}
-  function vis(el){return !!(el.offsetWidth||el.offsetHeight||el.getClientRects().length);}
-  function labelFor(inp){
-    if(inp.id){var l=document.querySelector('label[for="'+inp.id+'"]');if(l&&txt(l))return txt(l);}
-    var w=inp.closest('label');if(w){var t=txt(w);if(t)return t;}
-    var p=inp.previousElementSibling;
-    while(p){if(/^(LABEL|H[1-6]|SPAN|DIV|P|STRONG|B)$/.test(p.tagName)){var t2=txt(p);if(t2&&t2.length<90)return t2;}p=p.previousElementSibling;}
-    var par=inp.parentElement;
-    if(par){var l2=par.querySelector('label');if(l2&&txt(l2))return txt(l2);
-      var pp=par.previousElementSibling;
-      while(pp){if(/^(LABEL|H[1-6]|SPAN|DIV|P|STRONG|B)$/.test(pp.tagName)){var t3=txt(pp);if(t3&&t3.length<90)return t3;}pp=pp.previousElementSibling;}}
-    return inp.name||inp.id||'Field';
-  }
-  function collect(){
-    var inputs=[];
-    document.querySelectorAll('input,select,textarea').forEach(function(el){
-      if(!vis(el))return;
-      if(el.closest('#cwSaveBar'))return;
-      if(el.type==='button'||el.type==='submit'||el.type==='hidden')return;
-      var v;
-      if(el.type==='checkbox'){v=el.checked?'Yes':'No';}
-      else if(el.type==='radio'){if(!el.checked)return;v=el.value;}
-      else if(el.tagName==='SELECT'){v=el.selectedIndex>=0?txt(el.options[el.selectedIndex])||el.value:'';}
-      else{v=el.value;}
-      if(v==null||String(v).trim()==='')return;
-      inputs.push([labelFor(el),String(v)]);
-    });
-    var results=[],seenR={};
-    document.querySelectorAll('.result-card,.result-box').forEach(function(card){
-      if(!vis(card))return;
-      var lab=card.querySelector('.result-label,h3,h4,.label')||null;
-      var val=card.querySelector('.result-value,.value')||null;
-      var L=lab?txt(lab):'',V=val?txt(val):'';
-      var unit=card.querySelector('.result-unit');if(unit&&V)V+=' '+txt(unit);
-      if(!V){var t=txt(card);if(L)t=t.replace(L,'').trim();V=t;}
-      if(!L&&!V)return;
-      var k=L+'|'+V;if(seenR[k])return;seenR[k]=1;
-      results.push([L,V]);
-    });
-    var details=[],seenD={};
-    document.querySelectorAll('body *').forEach(function(el){
-      if(el.children.length>0)return;
-      if(!vis(el))return;
-      if(el.closest('#cwSaveBar'))return;
-      if(el.closest('.result-card')||el.closest('.result-box'))return;
-      if(/^(INPUT|SELECT|TEXTAREA|OPTION|SCRIPT|STYLE|BUTTON|LABEL|A|TITLE)$/.test(el.tagName))return;
-      var t=txt(el);
-      if(!t||t.length>130)return;
-      if(!/\$\s?[\d,.]|[\d.]+\s?%/.test(t))return;
-      var lbl='';
-      var par=el.parentElement;
-      if(par){var pt=txt(par);if(pt!==t&&pt.length<170){lbl=pt.replace(t,'').replace(/[:\s]+$/,'').trim();}}
-      var k=lbl+'|'+t;if(seenD[k])return;seenD[k]=1;
-      details.push([lbl,t]);
-    });
-    var meta={};
-    var c=document.querySelector('#clientName,#client,input[id*="lient"]');
-    if(c&&c.value)meta.client=c.value;
-    var p=document.querySelector('#preparedBy,input[id*="repared"]');
-    if(p&&p.value)meta.preparedBy=p.value;
-    return {tool:CW_TOOL,title:document.title,url:location.href,meta:meta,
-      sections:[{title:'Inputs',rows:inputs},{title:'Results',rows:results},{title:'Detail Lines',rows:details}]};
-  }
-  var btn=document.getElementById('cwSaveBtn');
-  btn.addEventListener('click',function(){
-    btn.disabled=true;btn.textContent='Saving...';
-    var payload=JSON.stringify(collect());
-    fetch(CW_HOOK,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain'},body:payload})
-      .then(function(){btn.textContent='Saved to Google Sheets';btn.style.background='#0AA6A9';
-        setTimeout(function(){btn.textContent='Save Results';btn.style.background='#D22730';btn.disabled=false;},4000);})
-      .catch(function(){btn.textContent='Save failed, retry';btn.style.background='#2D2A26';btn.disabled=false;});
-  });
-})();
-</script>
 
+<div class="savemodal" id="saveModal" onclick="if(event.target===this)closeSaves()">
+  <div class="savebox">
+    <h3>Saved Work</h3>
+    <div id="saveList"></div>
+    <div style="margin-top:14px;text-align:right"><button class="btn btn-grey" style="flex:none" onclick="closeSaves()">Close</button></div>
+  </div>
+</div>
+
+<div id="printArea"></div>
+<script>
+/* City Wide Pressure Washing Calculator. Built July 2026. Rate factors aligned to the Bid Calculator Step 1b chain. */
+'use strict';
+const ENDPOINT='https://script.google.com/macros/s/AKfycbzfNnrpidCbWB1DeUNgXvRhDFMQgApfpn-3C9GU45wMEHcJpWFl8ZQVo6PUBSRfEVfRdg/exec';
+const LOGO='https://emailer.emfluence.com/clients/citywide/uploadedfiles/signature_logo.png';
+function $(id){return document.getElementById(id)}
+function money(n){return '$'+Math.round(n).toLocaleString()}
+function money2(n){return '$'+n.toFixed(2)}
+
+/* ---------- REGIONS (pressure wash tech wages, ZipRecruiter July 2026: LV $18.50 avg) ---------- */
+const REGIONS={
+  lv:   {label:'Las Vegas',          wage:18.5, mult:1.00, note:'Competitive baseline. Clean cold-water rinse can go to the storm drain under the Clark County BMP; anything with soap or degreaser must be contained and collected.'},
+  reno: {label:'Reno / Sparks',      wage:20.0, mult:1.10, note:'Northern Nevada premium, and it is a compliance premium: Truckee Meadows rules route wash water to an oil/water separator and the sanitary sewer. Dirty-water work costs more here. Hold it.'},
+  carson:{label:'Carson City',       wage:20.0, mult:1.10, note:'Same rules and premium band as Reno. Winter freeze shortens the season: book heavy work spring through fall.'},
+  tric: {label:'TRIC / USA Parkway', wage:22.0, mult:1.18, note:'Tahoe Regional Industrial Center: big tilt-up walls, badging requirements, 20+ miles of deadhead, zero on-corridor vendors. Trip charges are legitimate here.'},
+  az:   {label:'Arizona Border',     wage:18.0, mult:1.05, note:'Laughlin, Kingman &amp; Havasu: thin vendor supply, price like a travel market. ADEQ stormwater rules apply in the incorporated areas.'}
+};
+
+/* ---------- CHEMICALS & CONSUMABLES (2026 street prices: J.Racenstein, WindowCleaner.com, bulk suppliers). perUnit = $ per SF, pad, spot, or stain. ---------- */
+const DEFAULT_CHEMS={
+  sh:{name:'Sodium hypochlorite 12.5% + surfactant (soft wash mix)', pack:'bulk $2-4/gal', cost:3.50, perUnit:0.010, note:'House mix 1:3 to 1:4. About $15-25 in chemical per 2,000 SF of wall.'},
+  degreaser:{name:'F9 Groundskeeper degreaser', pack:'5 gal $308 ($62/gal)', cost:62.00, perUnit:0.020, note:'Dilutes 8:1 to 20:1. The workhorse for greasy flatwork and pads.'},
+  deggarage:{name:'Garage spot degreasing (oil rows &amp; stalls)', pack:'allowance', cost:62.00, perUnit:0.005, note:'Garages spot-degrease the oil rows, not the whole deck.'},
+  degpad:{name:'Degreaser + sanitizer charge per dumpster pad', pack:'per-pad allowance', cost:0, perUnit:8.00, note:'Pads drink chemical. Budget it per pad, not per SF.'},
+  barc:{name:'F9 BARC rust remover', pack:'1 gal $55 (250-800 SF)', cost:55.00, perUnit:0.15, note:'The rust standard. Treat the whole panel, not just the stain, or you leave bright patches.'},
+  graffiti:{name:'Taginator / Elephant Snot graffiti remover', pack:'1 gal $68-95 (175-250 SF)', cost:67.80, perUnit:0.30, note:'Masonry formulas differ from painted-surface formulas. Test first.'},
+  gumwear:{name:'Gum wand tips &amp; nozzle wear', pack:'per-spot allowance', cost:0, perUnit:0.05, note:'Steam and 200F water do the work; tips are the consumable.'},
+  oilspot:{name:'Degreaser + absorbent per oil stain', pack:'per-stain allowance', cost:0, perUnit:3.00},
+  water:{name:'Water (hydrant meter or tank fill)', pack:'LVVWD ~$4.27/1,000 gal + $2/day meter', cost:4.27, perUnit:0.002, note:'A 4 GPM machine drinks 240 gal/hr. Cheap, but never free, and metering is the law.'}
+};
+
+/* ---------- SERVICES. SF services use rate = SF per tech-hour all-in. Unit services use perHr. ---------- */
+const SERVICES=[
+ {id:'flatcold', name:'Concrete Flatwork: Cold Water', sub:'Sidewalks, plazas, entries. Dust, dirt, and grime with a surface cleaner', ico:'surface',
+  rate:1200, equip:12, crew1:true, chems:['water'], mkt:[0.10,0.30], floorRate:0.10,
+  desc:'Cold water surface-cleaner work on ordinary dirty concrete: sidewalks, entries, plazas, curb lines. The everyday flatwork service. If there is grease, gum, or food service anywhere in the scope, price the hot water service instead.'},
+ {id:'flathot', name:'Concrete Flatwork: Hot Water & Degrease', sub:'Greasy, oily, food-service concrete. Hot water is not optional here', ico:'hot',
+  rate:900, equip:20, crew1:true, chems:['degreaser','water'], mkt:[0.15,0.40], floorRate:0.15,
+  desc:'Hot water (200F+) with degreaser for grease, oil, and food-service soil. Hot water cuts petroleum and grease that cold water just spreads around. Degreaser use means the wash water must be contained and collected: reclaim is part of this price.'},
+ {id:'softwash', name:'Building Exterior Soft Wash', sub:'Stucco, EIFS, tilt-up. Low pressure, chemistry does the work', ico:'building',
+  rate:1000, equip:15, crew1:true, chems:['sh'], mkt:[0.15,0.60], floorRate:0.15,
+  desc:'Low-pressure application of a sodium hypochlorite and surfactant mix that kills and rinses off organic staining without blasting the surface. The right method for stucco, EIFS, and painted tilt-up: high pressure destroys those surfaces. Second-story work runs 30-50% slower; use the rate override or condition setting.'},
+ {id:'garage', name:'Parking Garage Cleaning', sub:'Multi-level decks: sweep, degrease, wash, recover', ico:'garage',
+  rate:2500, equip:25, crew1:false, flatCost:0, chems:['deggarage','water'], mkt:[0.06,0.25], floorRate:0.05,
+  desc:'Full-deck garage cleaning: sweep first, spot-degrease, surface-clean with high GPM machines, squeegee or vacuum-recover the water. A 3-person crew with an 8 GPM rig covers 6,000-8,000 SF per hour. Oil-heavy decks and drain-restricted garages need vacuum recovery: put that rig cost in the flat pass-through box.'},
+ {id:'drivethru', name:'Drive-Thru Lanes & Pads', sub:'QSR lanes, order windows, trash areas. The monthly restaurant program', ico:'drivethru',
+  rate:800, equip:20, crew1:true, freqDefault:12, chems:['degreaser','water'], mkt:[0.15,0.30], floorRate:0.12, minOwn:125,
+  desc:'Hot water and degreaser on drive-thru lanes, order windows, walk-up pads, and entry concrete. Sold as a monthly program: a maintained QSR visit runs $125-225 and the first restorative clean prices about double. Grease means containment: no storm drains.'},
+ {id:'dumpster', name:'Dumpster Pads & Enclosures', sub:'Hot water, degreaser, sanitizer. The nastiest and most necessary service', ico:'dumpster', unit:'pads',
+  perHr:2, equip:22, crew1:true, freqDefault:12, chems:['degpad','water'], mktUnit:[125,300], floorUnit:100,
+  desc:'Hot water degrease and sanitize of the pad and enclosure walls, with wash water contained and collected. Every food-service property needs it monthly. Standalone visits run $200-300 in Las Vegas; bundled with a larger visit the tool prices each pad from the build-up with a $100 floor.'},
+ {id:'gum', name:'Gum Removal', sub:'Steam and 200F water, spot by spot', ico:'gum', unit:'spots',
+  perHr:50, equip:18, crew1:true, chems:['gumwear'], mktUnit:[0.50,2.00], floorUnit:0.40,
+  desc:'Hot water and steam lift gum without scarring the concrete. A tech clears 40-60 spots an hour with a gum wand. Count spots on your walk (a gum-heavy storefront runs 20-40 per 1,000 SF) and let the minimum carry small counts.'},
+ {id:'graffiti', name:'Graffiti Removal', sub:'Chemical lift, test patch first. Priced by tagged area', ico:'graffiti',
+  rate:100, equip:15, crew1:true, chems:['graffiti','water'], mkt:[1.00,4.00], floorRate:1.00, minOwn:250,
+  desc:'Masonry-safe graffiti chemistry applied, dwelled, and hot-rinsed. Enter the tagged square footage. Small tags are minimum-charge work ($250 floor); porous block and repeat layers take multiple passes. Photograph before and after: property managers bill some of this to insurance.'},
+ {id:'rust', name:'Rust Stain Removal', sub:'F9 BARC chemistry for irrigation and metal staining', ico:'rust',
+  rate:200, equip:12, crew1:true, chems:['barc','water'], mkt:[0.35,1.00], floorRate:0.35, minOwn:150,
+  desc:'Specialty acid-side chemistry (F9 BARC) for irrigation rust, fertilizer, and battery staining on concrete. Treat the full panel so the finish is uniform. In Las Vegas, sprinkler overspray rust pairs naturally with the hard water work our window crews flag.'},
+ {id:'oilstain', name:'Oil & Grease Spot Treatment', sub:'Parking stall drips and leaks, per stain', ico:'oil', unit:'stains',
+  perHr:6, equip:15, crew1:true, chems:['oilspot'], mktUnit:[5,15], floorUnit:5,
+  desc:'Degrease, hot-wash, and absorb individual parking stall stains. Priced per stain as an add-on to flatwork visits; heavy soaked-in stains may lighten rather than vanish, and saying so up front is what keeps the review at five stars.'},
+ {id:'awning', name:'Awning & Canopy Cleaning', sub:'Fabric and metal awnings, soft brush and low pressure', ico:'awning',
+  rate:300, equip:10, crew1:true, chems:['sh'], mkt:[0.35,1.00], floorRate:0.35,
+  desc:'Gentle chemistry and soft brushing for fabric awnings, low-pressure rinse for metal canopies. Pairs with window and storefront work on the same visit. Undersides are a separate count.'},
+ {id:'program', name:'Storefront Concrete Program', sub:'Recurring monthly or quarterly walkway program', ico:'store',
+  rate:1800, equip:12, crew1:true, freqDefault:12, chems:['water'], mkt:[0.08,0.15], floorRate:0.06, minOwn:125,
+  desc:'The recurring program: storefront walkways, entries, and patio pads on a monthly or quarterly route. Maintained concrete cleans fast, which is why program pricing runs $0.08-0.15 per SF against $0.15-0.30 one-time. Recurring revenue, clean storefronts, and first call on every premium service above.'}
+];
+const CONDITIONS=[{k:'good',label:'Maintained',lab:1,chem:1},{k:'heavy',label:'Dirty (1+ yr)',lab:1.35,chem:1.5},{k:'neglect',label:'First Clean / Restoration',lab:1.8,chem:2}];
+const FREQS=[[1,'One-time / 1x per year'],[2,'2x per year'],[4,'Quarterly'],[6,'Every other month'],[12,'Monthly'],[26,'Bi-weekly']];
+
+/* Rate factors, aligned to Bid Calculator Step 1b */
+const BURDEN=0.15;        /* payroll burden on wages */
+const INCIDENTALS=0.04;   /* room for what we are not considering: 4% of labor */
+const IC_MARGIN=0.08;     /* crew company margin, margin basis: cost / (1 - 8%), same math as the Bid Calculator */
+const VENDOR_CHEM_MARKUP=0.15;
+const MIN_PRICE=250;
+function autoMargin(sf){ if(sf<1000)return 40; if(sf<2500)return 38; if(sf<5000)return 36; if(sf<10000)return 34; if(sf<25000)return 33; return 32; }
+
+const ICONS={
+ surface:'<svg viewBox="0 0 24 24"><circle cx="12" cy="14" r="6"/><circle cx="12" cy="14" r="2"/><path d="M12 8V3M9 3h6"/></svg>',
+ hot:'<svg viewBox="0 0 24 24"><path d="M8 3c2 3-2 4 0 7M13 3c2 3-2 4 0 7"/><rect x="5" y="12" width="14" height="7" rx="2"/><path d="M19 15h2"/><circle cx="9" cy="15.5" r="1"/></svg>',
+ building:'<svg viewBox="0 0 24 24"><rect x="5" y="3" width="14" height="18"/><path d="M9 7h2M13 7h2M9 11h2M13 11h2M9 15h2M13 15h2M3 21h18"/></svg>',
+ garage:'<svg viewBox="0 0 24 24"><path d="M3 10 12 4l9 6"/><path d="M5 10v11h14V10"/><path d="M8 14h8M8 17h8M8 21v-7M16 21v-7"/></svg>',
+ drivethru:'<svg viewBox="0 0 24 24"><path d="M3 17h13l3-5h2"/><circle cx="7" cy="19" r="1.6"/><circle cx="14" cy="19" r="1.6"/><rect x="4" y="8" width="9" height="6" rx="1"/><path d="M17 6h4v4h-4z"/></svg>',
+ dumpster:'<svg viewBox="0 0 24 24"><path d="M4 9h16l-1.5 10h-13z"/><path d="M3 9l2-4h14l2 4"/><path d="M10 5V3h4v2M9 13v3M15 13v3"/></svg>',
+ gum:'<svg viewBox="0 0 24 24"><circle cx="8" cy="16" r="2.5"/><circle cx="15" cy="10" r="1.8"/><circle cx="17" cy="17" r="1.4"/><path d="M4 21h16M6 3l3 4M12 3v4M18 3l-3 4"/></svg>',
+ graffiti:'<svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="12" rx="1"/><path d="M6 13c2-3 4 1 6-2s4 0 6-2"/><path d="M8 21h8"/></svg>',
+ rust:'<svg viewBox="0 0 24 24"><path d="M12 3s5 6 5 9.5a5 5 0 0 1-10 0C7 9 12 3 12 3z"/><path d="M9 20c2 1.5 4 1.5 6 0"/></svg>',
+ oil:'<svg viewBox="0 0 24 24"><ellipse cx="12" cy="17" rx="7" ry="3"/><path d="M12 14V6"/><path d="M12 6c0-2 2-3 2-3"/></svg>',
+ awning:'<svg viewBox="0 0 24 24"><path d="M3 10 5 4h14l2 6"/><path d="M3 10c0 2 1.5 3 3 3s3-1 3-3c0 2 1.5 3 3 3s3-1 3-3c0 2 1.5 3 3 3s3-1 3-3"/><path d="M6 13v8M18 13v8"/></svg>',
+ store:'<svg viewBox="0 0 24 24"><path d="M4 9l1-5h14l1 5"/><path d="M4 9a2.5 2.5 0 0 0 5 0 2.5 2.5 0 0 0 5 0 2.5 2.5 0 0 0 5 0"/><path d="M5 11v9h14v-9"/><rect x="9" y="14" width="6" height="6"/></svg>'
+};
+
+/* ---------- STATE ---------- */
+let S={svcOn:{}, inputs:{}, user:localStorage.getItem('cwpw_user')||''};
+let CHEMS=JSON.parse(JSON.stringify(DEFAULT_CHEMS));
+try{const saved=localStorage.getItem('cwpw_chems'); if(saved){const p=JSON.parse(saved); Object.keys(CHEMS).forEach(k=>{if(p[k]&&typeof p[k].perUnit==='number')CHEMS[k].perUnit=p[k].perUnit;});}}catch(e){}
+function setSvc(id,field,val){if(!S.inputs[id])S.inputs[id]={};S.inputs[id][field]=val;recalc();autosaveSoon();}
+
+/* ---------- PRICING ENGINE (Bid Calculator Step 1b chain) ---------- */
+function priceService(s){
+  const st=S.inputs[s.id]||{};
+  const region=REGIONS[$('region').value];
+  const cond=CONDITIONS.find(c=>c.k===(st.cond||'good'));
+  const events=parseFloat(st.events)||s.freqDefault||1;
+  const isUnit=!!s.unit;
+  const qty=parseFloat(st.sf)||0;
+  if(!qty)return null;
+
+  /* 1. raw labor + payroll burden */
+  let manHrs=isUnit? qty/s.perHr*cond.lab : qty/s.rate*cond.lab;
+  manHrs=Math.max(manHrs,1.5);
+  const crew=s.crew1?1:(qty>20000?3:2);
+  const clockHrs=manHrs/crew;
+  const wage=parseFloat(st.wage)||region.wage;
+  const laborCost=manHrs*wage*(1+BURDEN);
+
+  /* 2. incidentals: room for what nobody itemized */
+  const incCost=laborCost*INCIDENTALS;
+
+  /* 3. chemicals & water */
+  let chems=[]; let chemCost=0;
+  (s.chems||[]).forEach(k=>{
+    const c=CHEMS[k]; if(!c)return;
+    const cost=qty*c.perUnit*cond.chem;
+    if(cost<0.5)return;
+    chemCost+=cost;
+    chems.push({prod:c.name,label:c.name,cost,packNote:c.pack,packPrice:c.cost,perUnit:c.perUnit});
+  });
+
+  /* 4. equipment + flat pass-throughs (reclaim rig, hydrant meter, trip) */
+  const equipCost=clockHrs*(parseFloat(st.equip)||s.equip);
+  const flatCost=('flat' in st && st.flat!=='')?(parseFloat(st.flat)||0):(s.flatCost||0);
+
+  /* 5. crew company margin: divide basis, same as the Bid Calculator */
+  const chemProvider=$('chemProvider').value;
+  const vendorChems=chemProvider==='vendor'?chemCost*(1+VENDOR_CHEM_MARKUP):0;
+  const cwChems=chemProvider==='cw'?chemCost:0;
+  const vendorBase=laborCost+incCost+equipCost+flatCost+vendorChems;
+  const vendorCost=vendorBase/(1-IC_MARGIN);
+  const totalCost=vendorCost+cwChems;
+
+  /* 6. City Wide margin + regional multiplier + market floors */
+  const ov=parseFloat($('ovMargin').value);
+  const svcOv=parseFloat(st.margin);
+  const margin=(!isNaN(svcOv)&&svcOv>0)?svcOv:(!isNaN(ov)&&ov>0)?ov:(isUnit?36:autoMargin(qty));
+  let price=totalCost/(1-margin/100)*region.mult;
+  const unitFloor=isUnit?s.floorUnit:s.floorRate;
+  if(unitFloor)price=Math.max(price, qty*unitFloor*region.mult+flatCost/(1-margin/100));
+  const rateOv=parseFloat(st.rateOv);
+  if(!isNaN(rateOv)&&rateOv>0)price=qty*rateOv+flatCost/(1-margin/100);
+
+  const mktArr=isUnit?s.mktUnit:s.mkt;
+  const mktLow=mktArr[0]*region.mult, mktHigh=mktArr[1]*region.mult;
+  return {s,sf:qty,isUnit,cond,events,manHrs,crew,clockHrs,wage,laborCost,incCost,chems,chemCost,cwChems,vendorChems,equipCost,flatCost,vendorBase,vendorCost,totalCost,margin,price,perSF:(price-flatCost)/qty,mktLow,mktHigh};
+}
+function activeResults(){return SERVICES.filter(s=>S.svcOn[s.id]).map(priceService).filter(Boolean);}
+function applyMinimums(results){
+  if(!results.length)return {results,minApplied:false,minMsg:''};
+  const override=$('minOverride').checked;
+  let minApplied=false,minMsg='';
+  const sorted=[...results].sort((a,b)=>b.price-a.price);
+  results.forEach(r=>{
+    const floor=(r.s.minOwn||MIN_PRICE);
+    r.finalPrice=r.price;
+    if(results.length===1){
+      if(r.price<floor&&!override){r.finalPrice=floor;minApplied=true;minMsg='Minimum applied: '+money(floor)+' floor on '+r.s.name+'.';}
+      else if(r.price<floor&&override){minMsg='Minimum overridden ('+($('minReason').value||'no reason given')+'). Price stands at computed '+money(r.price)+'.';}
+    }else{
+      if(r===sorted[0]&&r.price<floor&&!override){r.finalPrice=floor;minApplied=true;minMsg='Minimum applied to lead service only. Secondary services on the same visit price without a second minimum.';}
+    }
+  });
+  return {results,minApplied,minMsg};
+}
+/* ---------- RENDER: SERVICE CARDS ---------- */
+function renderServices(){
+  const wrap=$('svcList');
+  wrap.innerHTML=SERVICES.map(s=>{
+    const on=!!S.svcOn[s.id];
+    const st=S.inputs[s.id]||{};
+    const r=on?priceService(s):null;
+    const qtyLabel=s.unit?('Number of '+s.unit.charAt(0).toUpperCase()+s.unit.slice(1)):'Square Footage';
+    let body='';
+    if(on){
+      body='<div class="svc-grid">'
+      +'<div class="field"><label>'+qtyLabel+'</label><input type="number" value="'+(st.sf||'')+'" placeholder="e.g. '+(s.unit?'4':'5000')+'" onchange="setSvc(\''+s.id+'\',\'sf\',this.value)"></div>'
+      +'<div class="field"><label>Condition</label><select onchange="setSvc(\''+s.id+'\',\'cond\',this.value)">'+CONDITIONS.map(c=>'<option value="'+c.k+'"'+((st.cond||'good')===c.k?' selected':'')+'>'+c.label+'</option>').join('')+'</select><small>First cleans price about double: that is real labor, not padding.</small></div>'
+      +'<div class="field"><label>Visits / Year</label><select onchange="setSvc(\''+s.id+'\',\'events\',this.value)">'+FREQS.map(f=>'<option value="'+f[0]+'"'+((parseFloat(st.events)||s.freqDefault||1)===f[0]?' selected':'')+'>'+f[1]+'</option>').join('')+'</select></div>'
+      +'<div class="field"><label>Tech Wage $/hr</label><input type="number" step="0.5" value="'+(st.wage||'')+'" placeholder="'+REGIONS[$('region').value].wage.toFixed(2)+'" onchange="setSvc(\''+s.id+'\',\'wage\',this.value)"></div>'
+      +'<div class="field"><label>Equipment $/hr</label><input type="number" step="1" value="'+(st.equip||'')+'" placeholder="'+s.equip+'" onchange="setSvc(\''+s.id+'\',\'equip\',this.value)"><small>'+(s.equip>=20?'Hot water rig: machine, fuel, burner diesel, hoses.':'Cold rig, surface cleaner, wear.')+'</small></div>'
+      +'<div class="field"><label>Flat Pass-Through $ (reclaim rig, hydrant meter, trip)</label><input type="number" step="10" value="'+(('flat' in st)?st.flat:'')+'" placeholder="'+(s.flatCost||0)+'" onchange="setSvc(\''+s.id+'\',\'flat\',this.value)"><small>Billed at cost into the build-up. Margin applies to work, not rentals.</small></div>'
+      +'<div class="field"><label>'+(s.unit?'Price per '+s.unit.replace(/s$/,'')+' Override':'Rate/SF Override')+'</label><input type="number" step="0.01" value="'+(st.rateOv||'')+'" placeholder="auto build-up" onchange="setSvc(\''+s.id+'\',\'rateOv\',this.value)"></div>'
+      +'<div class="field"><label>Service Margin % Override</label><input type="number" value="'+(st.margin||'')+'" placeholder="auto '+(s.unit?36:(st.sf?autoMargin(parseFloat(st.sf)||0):'32-40'))+'" onchange="setSvc(\''+s.id+'\',\'margin\',this.value)"></div>'
+      +'</div>';
+      if(r){
+        const uw=s.unit?('/'+s.unit.replace(/s$/,'')):'/SF';
+        const flag=r.perSF>=r.mktLow&&r.perSF<=r.mktHigh?'<span class="mktflag ok">inside market range</span>':(r.perSF<r.mktLow?'<span class="mktflag warn">below market, room to hold price</span>':'<span class="mktflag warn">above market, check inputs or expect pushback</span>');
+        body+='<div class="buildup">'
+        +'<div class="bl"><span>Crew labor: '+r.manHrs.toFixed(1)+' tech-hrs ('+r.crew+' tech'+(r.crew>1?'s':'')+' x '+r.clockHrs.toFixed(1)+' hrs) @ $'+r.wage.toFixed(2)+' + '+(BURDEN*100)+'% payroll burden</span><b>'+money(r.laborCost)+'</b></div>'
+        +'<div class="bl"><span>Incidentals &amp; unlisted supplies ('+(INCIDENTALS*100)+'% of labor)</span><b>'+money(r.incCost)+'</b></div>'
+        +r.chems.map(c=>'<div class="bl"><span>'+c.label+' ('+money2(c.perUnit)+uw+')</span><b>'+money(c.cost)+'</b></div>').join('')
+        +'<div class="bl"><span>Equipment fee ('+r.clockHrs.toFixed(1)+' hrs @ $'+((st.equip)||s.equip)+'/hr)</span><b>'+money(r.equipCost)+'</b></div>'
+        +(r.flatCost?'<div class="bl"><span>Reclaim / meter / trip pass-through</span><b>'+money(r.flatCost)+'</b></div>':'')
+        +'<div class="bl"><span>Crew company margin ('+(IC_MARGIN*100).toFixed(0)+'% of their check, Bid Calculator math)</span><b>'+money(r.vendorCost-r.vendorBase)+'</b></div>'
+        +'<div class="bl tot"><span>We pay the crew'+(r.cwChems?' (City Wide supplies chemicals: '+money(r.cwChems)+')':'')+'</span><b>'+money(r.vendorCost)+'</b></div>'
+        +'<div class="bl tot" style="color:var(--cw-red)"><span>Client price @ '+r.margin+'% margin x '+REGIONS[$('region').value].mult.toFixed(2)+' regional</span><b>'+money(r.price)+' ('+money2(r.perSF)+uw+(r.flatCost?' + pass-through':'')+')</b></div>'
+        +'<div class="bl mkt"><span>2026 market check: '+money2(r.mktLow)+'-'+money2(r.mktHigh)+uw+' here. '+flag+'</span></div>'
+        +'</div>';
+      }
+      body+=howTo(s);
+    }
+    return '<div class="svc-card'+(on?' on':'')+'" id="svc-'+s.id+'">'
+    +'<div class="svc-head" onclick="toggleSvc(\''+s.id+'\')">'
+    +'<div class="svc-ico">'+ICONS[s.ico]+'</div>'
+    +'<div class="t"><b>'+s.name+'</b><span>'+s.sub+'</span></div>'
+    +(on&&r?'<div class="svc-price">'+money(r.price)+'</div>':'')
+    +'<div class="svc-toggle"></div></div>'
+    +'<div class="svc-body">'+body+'</div></div>';
+  }).join('');
+}
+function toggleSvc(id){S.svcOn[id]=!S.svcOn[id];recalc();autosaveSoon();}
+
+/* ---------- HOW-TO EDUCATION PER SERVICE ---------- */
+function howTo(s){
+  const H={
+   flatcold:'<h4>Kit</h4><ul><li>4-8 GPM machine, surface cleaner sized to the machine (about 4 inches of cleaner per GPM: 4 GPM runs a 16-20 inch, 8 GPM runs a 28-36 inch), wand for edges, water source.</li></ul><h4>Process</h4><ol><li>Sweep or blow debris first: washing trash into a storm drain is a violation by itself.</li><li>Surface-clean in overlapping passes, wand the edges and corners.</li><li>Rinse toward landscape where possible.</li></ol><div class="warnbox">Production is GPM math, not PSI: an 8 GPM rig covers about twice what a 4 GPM does. A tech with a 24 inch cleaner does 1,200-1,800 SF/hr on maintained concrete. Clean cold rinse water with no soap can go to the LV storm drain under the county BMP; the moment chemistry enters, it cannot.</div>',
+   flathot:'<h4>Why hot</h4><p>Grease and oil laugh at cold water. At 200F+ the water breaks the bond, the degreaser emulsifies it, and the surface actually comes clean. Gum, food service concrete, and fuel islands are hot water jobs, full stop.</p><h4>Process</h4><ol><li>Sweep, pre-treat grease with degreaser, dwell 5-10 minutes.</li><li>Hot surface-clean, wand the heavy spots.</li><li>Contain and collect the wash water: degreaser in the water means no storm drain, no exceptions. Berms, vacuum, or route to landscape/sanitary per site rules.</li></ol>',
+   softwash:'<h4>Why low pressure</h4><p>Stucco, EIFS, and painted tilt-up are surfaces you can destroy with a wand. Soft washing applies a 3-4% sodium hypochlorite mix with surfactant at garden-hose pressure, lets the chemistry kill the organic staining, and rinses. The building comes clean and stays clean longer because the growth is dead, not smeared.</p><h4>Process</h4><ol><li>Pre-wet plants and hardscape below; cover fresh landscaping.</li><li>Apply mix bottom-up, dwell, never let it dry on the wall.</li><li>Rinse top-down until runoff is clear. Neutralize landscape edges.</li></ol><div class="warnbox">Second-story walls run 30-50% slower and hard-access elevations more. Watch overspray on cars and account for wind. SH mist travels.</div>',
+   garage:'<h4>Crew &amp; production</h4><p>Garages are a production game: a 3-person crew (8 GPM surface cleaner, 5 GPM rinse tech, recovery tech with squeegee or vacuum) covers 6,000-8,000 SF per hour. Sweep the deck first, degrease the oil rows, wash bumper walls and wheel stops, recover the water.</p><div class="warnbox">Most garages drain to the storm system or dry wells, which makes degreaser recovery mandatory. Vacuum reclaim rigs run about $3,800 to own or real money to mobilize: put that in the flat pass-through so the margin math stays honest. Night and weekend work is the norm; stack levels so the crew never doubles back.</div>',
+   drivethru:'<h4>The program</h4><p>QSR drive-thrus are monthly accounts, not one-time jobs: lane, order window pad, walk-ups, entries, and the trash run. First visit is restorative and prices about double; after that a maintained store is a 60-90 minute stop. National brands run tight per-store budgets ($125-225 is the market), so route density is what makes the money work.</p><div class="warnbox">Everything here is grease. Hot water, degreaser, containment: always. Night windows after close are standard.</div>',
+   dumpster:'<h4>Process</h4><ol><li>Move the container, sweep and shovel debris (bag it, never wash it to the drain).</li><li>Degrease pad and enclosure walls, dwell, hot-wash at 200F.</li><li>Sanitize and deodorize, recover the water, replace the container.</li></ol><div class="warnbox">The single most compliance-sensitive service we sell: dumpster juice to a storm drain is the textbook illicit discharge. Contain, collect, dispose approved. Monthly frequency keeps pads from ever reaching biohazard state, and property managers pay to never think about this.</div>',
+   gum:'<h4>Process</h4><p>200F+ water through a gum wand or steam tip lifts each spot in seconds without the white scars that blasting leaves. Count spots during the walk: gum-heavy storefronts run 20-40 spots per 1,000 SF. Pair gum removal with the storefront concrete program and the whole frontage stays retail-clean.</p>',
+   graffiti:'<h4>Process</h4><ol><li>Photograph the tag, test the remover on a small patch (masonry and painted surfaces take different chemistry).</li><li>Apply, dwell per label, agitate, hot-rinse.</li><li>Repeat on porous block; shadowing may need a second product or, on paint, a color-matched repaint referral.</li></ol><div class="warnbox">Fast response is the sales pitch: tags removed within 24-48 hours deter repeat tagging. Offer property managers a standing rapid-response rate.</div>',
+   rust:'<h4>Process</h4><ol><li>Identify the source: irrigation water, fertilizer, or metal furniture. Fix the source or the stain returns.</li><li>Apply F9 BARC to the full panel, not just the stain stripe, dwell, agitate, rinse well.</li><li>Photograph the before and after: rust removal is the most visually dramatic service we sell.</li></ol>',
+   oilstain:'<h4>Process</h4><p>Degrease, dwell, hot-wash, and absorb each stall stain. Set expectations: fresh drips vanish, years-old soaked stains lighten 70-90%. Sell it as an add-on line on every parking lot and garage visit.</p>',
+   awning:'<h4>Process</h4><p>Fabric awnings get soft-wash chemistry and a soft brush at low pressure; metal canopies take a standard low-pressure rinse. Check seams and stitching first and note damage before you touch it. Quote tops and undersides separately.</p>',
+   program:'<h4>Route economics</h4><p>Maintained concrete cleans in half the time of neglected concrete, which is why monthly program pricing at $0.08-0.15 per SF beats one-time work for everyone: the client pays less per visit, the storefront always looks new, and City Wide owns the property relationship that feeds dumpster pads, gum, rust, and building washes. Bundle with the window storefront route where we have one.</p>'
+  };
+  return '<details class="howto"><summary>How it is done: rig, process &amp; compliance</summary><div class="hbody"><p>'+s.desc+'</p>'+(H[s.id]||'')+'</div></details>';
+}
+
+/* ---------- SUPPLIES LIST ---------- */
+function renderShopping(results){
+  const agg={};
+  results.forEach(r=>{
+    (r.chems||[]).forEach(c=>{
+      if(!agg[c.prod])agg[c.prod]={prod:c.prod,packLabel:c.packNote,packPrice:c.packPrice,cost:0};
+      agg[c.prod].cost+=c.cost;
+    });
+    if(r.flatCost){
+      const k='Reclaim / meter / trip ('+r.s.name+')';
+      agg[k]={prod:k,packLabel:'pass-through at cost',packPrice:r.flatCost,cost:r.flatCost};
+    }
+  });
+  const items=Object.values(agg);
+  $('shopCard').style.display=items.length?'':'none';
+  if(!items.length)return;
+  $('shopList').innerHTML='<table style="width:100%;border-collapse:collapse;font-size:12px">'
+  +'<tr><th style="text-align:left;padding:6px 8px;background:var(--cw-black);color:#fff">Item</th><th style="text-align:right;padding:6px 8px;background:var(--cw-black);color:#fff">Basis</th><th style="text-align:right;padding:6px 8px;background:var(--cw-black);color:#fff">Job Cost</th></tr>'
+  +items.map(it=>'<tr><td style="padding:6px 8px;border-bottom:1px solid var(--cw-border)">'+it.prod+'</td><td style="text-align:right;padding:6px 8px;border-bottom:1px solid var(--cw-border)">'+it.packLabel+'</td><td style="text-align:right;padding:6px 8px;border-bottom:1px solid var(--cw-border)"><b>'+money(it.cost)+'</b></td></tr>').join('')
+  +'</table>'
+  +'<p style="font-size:10.5px;color:var(--cw-grey);margin-top:8px">Chemical allowances are per SF, pad, spot, or stain. Verify current prices (J.Racenstein, WindowCleaner.com, bulk SH suppliers) and update the Rate Book if they moved. When the crew provides chemicals, this list is your audit sheet for what they should be using.</p>';
+}
+
+/* ---------- SUMMARY ---------- */
+function recalc(){
+  const region=REGIONS[$('region').value];
+  $('regionNote').innerHTML=region.note;
+  const raw=activeResults();
+  const {results,minMsg}=applyMinimums(raw);
+  renderServices();
+  const showInt=$('showInternal').checked;
+  const lines=results.map(r=>{
+    const unitTxt=r.isUnit?(r.sf+' '+r.s.unit):(r.sf.toLocaleString()+' SF');
+    return '<div class="sline cat"><span class="n">'+r.s.name+' ('+unitTxt+')</span><span>'+money(r.finalPrice)+'</span></div>'
+    +(r.events>1?'<div class="sline sub"><span class="n">'+r.events+'x per year = '+money(r.finalPrice*r.events)+'/yr ('+money(r.finalPrice*r.events/12)+'/mo accrual)</span></div>':'')
+    +(showInt?'<div class="sline sub"><span class="n">crew '+money(r.vendorCost)+(r.cwChems?' + our chems '+money(r.cwChems):'')+' | margin '+r.margin+'% | '+money2(r.finalPrice/r.sf)+(r.isUnit?'/unit':'/SF')+'</span></div>':'');
+  }).join('');
+  $('sumLines').innerHTML=lines||'<div style="font-size:12px;color:#bdbbb8">Turn on services to build the quote.</div>';
+  const total=results.reduce((a,r)=>a+r.finalPrice,0);
+  const totSF=results.filter(r=>!r.isUnit).reduce((a,r)=>a+r.sf,0);
+  const totHrs=results.reduce((a,r)=>a+r.clockHrs,0);
+  $('sumTotal').textContent=money(total);
+  $('mPerSF').textContent=totSF?money2(results.filter(r=>!r.isUnit).reduce((a,r)=>a+r.finalPrice,0)/totSF):'n/a';
+  $('mHours').textContent=totHrs.toFixed(1);
+  $('mSvcs').textContent=results.length;
+  renderShopping(results);
+  $('minRow').style.display=minMsg?'flex':'none';
+  $('minMsg').textContent=minMsg;
+  const ov=parseFloat($('ovMargin').value);
+  const shown=(!isNaN(ov)&&ov>0)?ov:(results.length?Math.round(results.reduce((a,r)=>a+r.margin,0)/results.length):null);
+  $('marginPill').textContent=shown?shown+'%'+((!isNaN(ov)&&ov>0)?' override':' auto by size'):'32-40% auto';
+  $('marginPill').className='marginpill'+(shown&&shown<32?' hot':'');
+}
+/* ---------- EDUCATION TABS ---------- */
+function renderFloors(){
+  $('floorsContent').innerHTML=
+  '<h2>Hot or Cold: the First Question on Every Quote</h2>'
+  +'<p>Cold water with a surface cleaner handles dirt, dust, and ordinary grime. The moment the scope includes grease, oil, gum, or food service, it is a hot water job, and hot water jobs carry containment duty because they always involve chemistry. Get this one question right and the rest of the quote falls into place.</p>'
+  +'<table><tr><th>Surface / Situation</th><th>Right Service</th><th>Water</th><th>Watch Out</th></tr>'
+  +'<tr><td>Sidewalks, plazas, ordinary grime</td><td>Concrete Flatwork: Cold</td><td>Cold</td><td>Sweep first. Clean rinse only may go to the LV storm drain.</td></tr>'
+  +'<tr><td>Food service concrete, fuel areas, grease</td><td>Flatwork: Hot &amp; Degrease</td><td>Hot 200F+</td><td>Degreaser = contain and collect. No exceptions.</td></tr>'
+  +'<tr><td>Stucco, EIFS, painted tilt-up walls</td><td>Building Soft Wash</td><td>Low pressure + SH mix</td><td>High pressure destroys these surfaces. Chemistry does the work.</td></tr>'
+  +'<tr><td>Parking garages</td><td>Garage Cleaning</td><td>High GPM + recovery</td><td>Drains feed the storm system: recovery is usually mandatory.</td></tr>'
+  +'<tr><td>Drive-thrus, QSR pads</td><td>Drive-Thru Program</td><td>Hot + degreaser</td><td>Monthly program business. Night windows.</td></tr>'
+  +'<tr><td>Dumpster pads &amp; enclosures</td><td>Dumpster Pad Service</td><td>Hot + degreaser + sanitizer</td><td>The most compliance-sensitive service on the list.</td></tr>'
+  +'<tr><td>Gum-dotted storefronts</td><td>Gum Removal</td><td>Steam / 200F</td><td>Count spots on the walk: 20-40 per 1,000 SF is common.</td></tr>'
+  +'<tr><td>Tags and vandalism</td><td>Graffiti Removal</td><td>Chemical + hot rinse</td><td>Test patch first. 24-48 hour response deters repeats.</td></tr>'
+  +'<tr><td>Irrigation rust stripes</td><td>Rust Removal (F9)</td><td>Specialty chemistry</td><td>Treat the whole panel or it looks patchy. Fix the sprinkler.</td></tr>'
+  +'<tr><td>Stall drips and leaks</td><td>Oil &amp; Grease Spots</td><td>Hot + degreaser</td><td>Old soaked stains lighten, not vanish. Say so up front.</td></tr>'
+  +'<tr><td>Fabric and metal awnings</td><td>Awning &amp; Canopy</td><td>Soft wash</td><td>Note damaged stitching before touching it.</td></tr>'
+  +'<tr><td>Storefront walkways, recurring</td><td>Storefront Program</td><td>Cold, monthly</td><td>The annuity. $0.08-0.15/SF maintained vs $0.15-0.30 one-time.</td></tr>'
+  +'</table>'
+  +'<h2>GPM Beats PSI: the Equipment Truth</h2>'
+  +'<p>Buyers fixate on PSI; production lives in GPM (gallons per minute). Water volume is what moves soil off the surface and into the gutter. An 8 GPM machine covers roughly double what a 4 GPM covers in the same hour, and surface cleaner size follows the same rule: about 4 inches of cleaner deck per GPM. When a crew shows up with a 4 GPM box-store machine for a 60,000 SF garage, the math does not work no matter how hard they try.</p>'
+  +'<table><tr><th>Rig</th><th>Surface Cleaner</th><th>Honest Production (maintained concrete)</th></tr>'
+  +'<tr><td>4 GPM cold</td><td>16-20 inch</td><td>700-900 SF/hr</td></tr>'
+  +'<tr><td>5.5 GPM hot</td><td>20-24 inch</td><td>1,200-1,800 SF/hr</td></tr>'
+  +'<tr><td>8 GPM hot</td><td>28-36 inch</td><td>2,000-3,500 SF/hr</td></tr>'
+  +'<tr><td>3-person garage crew, 8+5 GPM + recovery</td><td>dual</td><td>6,000-8,000 SF/hr</td></tr></table>'
+  +'<h2>Wash Water Rules: Where the Fines Live</h2>'
+  +'<p>This is the education that keeps City Wide out of the newspaper. Wash water to a storm drain is an illicit discharge under the Clean Water Act; federal penalties reach $68,445 per day and Nevada adds up to $25,000 per violation per day. The practical rules:</p>'
+  +'<ul><li><b>Las Vegas / Clark County:</b> plain cold-water rinse with no soap, no solvents, no oil sheen, and swept-first surfaces may discharge. Anything with degreaser or detergent must be contained, collected, and disposed at an approved location or infiltrated on landscape. Most of the valley drains to dry wells and the Las Vegas Wash, so enforcement has zero tolerance for chemistry in a drain.</li>'
+  +'<li><b>Reno / Sparks / Carson:</b> stricter. Truckee Meadows rules route pressure wash water to an oil/water separator connected to the sanitary sewer. Violations are a misdemeanor, and everything drains toward the Truckee River. This is exactly why Northern Nevada dirty-water work carries a 10% premium in this tool.</li>'
+  +'<li><b>Every job:</b> sweep and bag debris first, never wash trash to the drain, and photograph your containment setup. The photo is your defense.</li></ul>'
+  +'<p>Water sourcing is part of the quote: an LVVWD hydrant meter runs $90 for the permit plus about $2 a day and $4.27 per 1,000 gallons, or the crew runs tank water. A 4 GPM machine drinks 240 gallons an hour: a full day is real gallons.</p>';
+}
+
+function renderProcess(){
+  $('processContent').innerHTML=
+  '<h2>How to Quote a Pressure Washing Job in 6 Steps</h2>'
+  +'<ol><li><b>Walk it and measure it.</b> Flatwork SF, wall SF, pad count, gum spots, stains, tags. Photograph everything, especially grease and existing damage.</li>'
+  +'<li><b>Sort hot from cold.</b> Any grease, gum, oil, or food service = hot water service at hot water rates. Do not let a cold-only vendor talk the scope down to their equipment.</li>'
+  +'<li><b>Answer the water question before pricing.</b> Where does the wash water go on THIS property? Storm drain rules decide whether reclaim gear is on the job, and reclaim changes the price. In Reno it is on almost every dirty job by default.</li>'
+  +'<li><b>Put hard costs in the flat pass-through.</b> Reclaim rig mobilization, hydrant meter, TRIC trip charges: at cost, no margin on rentals, same as the lift logic in the window tool.</li>'
+  +'<li><b>Structure the program.</b> First clean at restoration rates (about double), then monthly or quarterly maintenance at program rates. Show the monthly accrual. Recurring concrete at $0.08-0.15/SF beats fighting over one-time jobs.</li>'
+  +'<li><b>Apply the minimum and read the market flag.</b> $250 visit minimum ($125 program visits, $250 graffiti, $150 rust). Below-market flags mean hold the price, not cut it.</li></ol>'
+  +'<h2>Outsourcing: Picking the Right Pressure Washing Vendor</h2>'
+  +'<ul><li><b>Ask about the rig first.</b> GPM, hot water capability, surface cleaner sizes, reclaim equipment. "8 GPM hot with a 28 inch cleaner and a vacuum reclaim trailer" is a real answer. A cold 4 GPM machine is a residential driveway rig.</li>'
+  +'<li><b>Ask where the wash water goes.</b> The right vendor answers with berms, vacuum recovery, and disposal sites before you finish the question. A vendor who shrugs is a $25,000-per-day liability wearing our brand.</li>'
+  +'<li><b>Night work capability.</b> Drive-thrus, garages, and storefronts are after-hours work. Confirm crews, lighting, and insurance for it.</li>'
+  +'<li><b>Packet on file first.</b> Insurance, W-9, MSA, like every City Wide crew. Confirm their GL covers water damage and overspray claims.</li>'
+  +'<li><b>Target rates.</b> The crew side of this tool is built on Bid Calculator math: labor plus burden, incidentals, chemicals, equipment, pass-throughs, and an 8% crew margin. If a vendor quote lands far off the build-up, one line is wrong: negotiate that line, not the total.</li>'
+  +'<li><b>Red flags.</b> No hot water on a grease scope, no containment gear, per-job prices with no SF basis, $99 specials, and anyone who says the storm drain is fine.</li></ul>'
+  +'<h2>What the Crew Should Be Using</h2>'
+  +'<ul><li><b>Soft wash:</b> 12.5% sodium hypochlorite ($2-4/gal bulk) with surfactant, mixed 1:3 to 1:4.</li>'
+  +'<li><b>Degreasing:</b> F9 Groundskeeper class degreaser for flatwork, pads, and drive-thrus.</li>'
+  +'<li><b>Rust:</b> F9 BARC, full-panel application.</li>'
+  +'<li><b>Graffiti:</b> Taginator or Elephant Snot, tested on a patch first.</li>'
+  +'<li><b>Gum:</b> heat and a gum wand, not chemicals.</li></ul>'
+  +'<h2>Pricing It Effectively</h2>'
+  +'<ul><li>Margin auto-scales 32-40% by job size, same family rules as every rebuilt tool, with the override box for the times you know better.</li>'
+  +'<li>First cleans price about double: neglected concrete is slow, restoration is real work, and underquoting visit one poisons the program price forever.</li>'
+  +'<li>Compliance is a feature, not a cost: property managers carry the same liability we do. Sell the containment, the photos, and the paper trail. Cheap vendors who guess about drains are the alternative.</li>'
+  +'<li>Bundle the property: storefront program + dumpster pads + quarterly building wash + gum on one route beats three vendors and three mobilizations, and the minimum applies once.</li></ul>'
+  +'<h2>Quality Gates Before the Crew Leaves</h2>'
+  +'<ol><li>No zebra striping or wand marks on flatwork; edges and corners done.</li>'
+  +'<li>No chemistry residue or SH smell lingering at entrances; landscape rinsed.</li>'
+  +'<li>Containment photos taken, debris bagged and hauled, drains clear.</li>'
+  +'<li>Before and after photos on every service: they sell the program and defend the invoice.</li>'
+  +'<li>Water off, meters logged, site walked with the day contact where possible.</li></ol>';
+}
+
+function renderRates(){
+  let rows='';
+  Object.keys(CHEMS).forEach(k=>{
+    const c=CHEMS[k];
+    rows+='<tr><td>'+c.name+(c.note?'<br><span style="color:var(--cw-grey);font-size:11px">'+c.note+'</span>':'')+'</td><td>'+(c.pack||'')+'</td>'
+    +'<td><input type="number" step="0.001" value="'+c.perUnit.toFixed(3)+'" onchange="setChem(\''+k+'\',this.value)"></td></tr>';
+  });
+  $('ratesContent').innerHTML=
+  '<h2>Chemical &amp; Water Rate Book (cost per SF / pad / spot / stain)</h2>'
+  +'<p>Seeded from 2026 street prices. Edit any allowance and it saves to this browser and flows into every build-up. When the crew provides chemicals, this is the audit sheet.</p>'
+  +'<table><tr><th>Item</th><th>Reference Price</th><th>Cost per Unit $</th></tr>'+rows+'</table>'
+  +'<h2>Equipment Reference (what good crews run, 2026)</h2>'
+  +'<table><tr><th>Rig</th><th>Street Price</th><th>Notes</th></tr>'
+  +'<tr><td>Hot water 8 GPM skid (Pressure-Pro, Hotsy, Landa)</td><td>$8,700-15,000</td><td>The commercial standard. Hotsy of Las Vegas is the local dealer.</td></tr>'
+  +'<tr><td>Surface cleaners (Whisper Wash class, 20-36 inch)</td><td>$600-2,600</td><td>Size to GPM: about 4 inches of deck per gallon.</td></tr>'
+  +'<tr><td>Vacuum reclaim system (Sirocco PEV2 class)</td><td>$3,800+</td><td>Mandatory kit for garages, pads, and Reno work.</td></tr>'
+  +'<tr><td>Turnkey hot trailer rig with tank and reels</td><td>$30,000-55,000</td><td>What a real commercial vendor pulls up with.</td></tr>'
+  +'<tr><td>Equipment cost allocation</td><td>$18-25/hr hot, $10-15/hr cold</td><td>Depreciation, fuel, burner diesel, wear. Seeded per service.</td></tr></table>'
+  +'<h2>Regional Tech Wages &amp; Multipliers</h2>'
+  +'<table><tr><th>Region</th><th>Tech $/hr</th><th>Price Multiplier</th><th>Why</th></tr>'
+  +Object.keys(REGIONS).map(k=>{const r=REGIONS[k];return '<tr><td>'+r.label+'</td><td>$'+r.wage.toFixed(2)+'</td><td>x'+r.mult.toFixed(2)+'</td><td>'+r.note+'</td></tr>';}).join('')
+  +'</table>'
+  +'<h2>Rate Factors (matches the Bid Calculator Step 1b)</h2>'
+  +'<table><tr><th>Factor</th><th>Value</th><th>Rule</th></tr>'
+  +'<tr><td>Payroll burden (FICA/FUTA/WC)</td><td>'+(BURDEN*100)+'%</td><td>On top of raw wages, same as the master formula.</td></tr>'
+  +'<tr><td>Incidentals &amp; unlisted supplies</td><td>'+(INCIDENTALS*100)+'% of labor</td><td>Room for what nobody itemized: disposal, parking, a second trip.</td></tr>'
+  +'<tr><td>Crew company margin</td><td>'+(IC_MARGIN*100)+'%</td><td>Margin basis, cost divided by 0.92: the crew keeps 8% of their check, exactly like the Bid Calculator IC margin line.</td></tr>'
+  +'<tr><td>City Wide margin</td><td>32-40%</td><td>Auto by job size, divide basis. Override with a reason.</td></tr>'
+  +'<tr><td>Minimums</td><td>$250 visit ($125 program visits, $250 graffiti, $150 rust)</td><td>Lead service only on multi-service visits.</td></tr>'
+  +'<tr><td>Pass-throughs</td><td>At cost</td><td>Reclaim rigs, hydrant meters, trip charges: no margin on rentals.</td></tr>'
+  +'<tr><td>Crew-provided chemical markup</td><td>'+(VENDOR_CHEM_MARKUP*100)+'%</td><td>Their procurement cost.</td></tr></table>';
+}
+function setChem(k,v){CHEMS[k].perUnit=parseFloat(v)||CHEMS[k].perUnit;
+  const slim={};Object.keys(CHEMS).forEach(kk=>{slim[kk]={perUnit:CHEMS[kk].perUnit};});
+  localStorage.setItem('cwpw_chems',JSON.stringify(slim));recalc();}
+
+/* ---------- TABS ---------- */
+function showTab(t){
+  document.querySelectorAll('.tab').forEach(el=>el.classList.toggle('active',el.dataset.tab===t));
+  ['quote','floors','process','rates'].forEach(k=>{$('tab-'+k).style.display=k===t?'':'none';});
+  if(t==='floors')renderFloors(); if(t==='process')renderProcess(); if(t==='rates')renderRates();
+}
+
+/* ---------- PRINT & COPY ---------- */
+function printQuote(internal){
+  const raw=activeResults(); const {results}=applyMinimums(raw);
+  if(!results.length){alert('Turn on at least one service first.');return;}
+  const region=REGIONS[$('region').value];
+  const acct=$('acct').value||'Client Facility';
+  const d=$('qdate').value||new Date().toISOString().slice(0,10);
+  const total=results.reduce((a,r)=>a+r.finalPrice,0);
+  let h='<div class="p-head"><img src="'+LOGO+'"><div class="pt"><b>'+(internal?'Internal Pricing Sheet':'Pressure Washing Investment Recap')+'</b><span>'+acct+' | '+region.label+' | '+d+'</span></div></div>';
+  results.forEach(r=>{
+    const unitTxt=r.isUnit?(r.sf+' '+r.s.unit):(r.sf.toLocaleString()+' SF');
+    h+='<div class="p-svc"><span class="p-price">'+money(r.finalPrice)+(r.events>1?' per visit':'')+'</span><h4>'+r.s.name+' | '+unitTxt+(r.events>1?' | '+r.events+'x per year':'')+'</h4><p>'+r.s.desc+'</p>';
+    if(r.events>1)h+='<p><b>Annual: '+money(r.finalPrice*r.events)+' ('+money(r.finalPrice*r.events/12)+'/month)</b></p>';
+    if(internal){
+      h+='<table class="p-table"><tr><th>Cost Line</th><th>Amount</th></tr>'
+      +'<tr><td>Crew labor '+r.manHrs.toFixed(1)+' tech-hrs @ $'+r.wage.toFixed(2)+' +'+(BURDEN*100)+'% burden</td><td>'+money(r.laborCost)+'</td></tr>'
+      +'<tr><td>Incidentals ('+(INCIDENTALS*100)+'% of labor)</td><td>'+money(r.incCost)+'</td></tr>'
+      +r.chems.map(c=>'<tr><td>'+c.label+'</td><td>'+money(c.cost)+'</td></tr>').join('')
+      +'<tr><td>Equipment fee</td><td>'+money(r.equipCost)+'</td></tr>'
+      +(r.flatCost?'<tr><td>Reclaim / meter / trip pass-through</td><td>'+money(r.flatCost)+'</td></tr>':'')
+      +'<tr><td><b>Crew company total (8% margin basis, Bid Calculator math)</b></td><td><b>'+money(r.vendorCost)+'</b></td></tr>'
+      +(r.cwChems?'<tr><td>City Wide supplied chemicals</td><td>'+money(r.cwChems)+'</td></tr>':'')
+      +'<tr><td><b>Margin '+r.margin+'% | Regional x'+region.mult.toFixed(2)+' | '+money2(r.perSF)+(r.isUnit?'/'+r.s.unit.replace(/s$/,''):'/SF')+' (market '+money2(r.mktLow)+'-'+money2(r.mktHigh)+')</b></td><td><b>'+money(r.finalPrice)+'</b></td></tr></table>';
+    }
+    h+='</div>';
+  });
+  h+='<div class="p-total"><span>Total Investment'+(results.some(r=>r.events>1)?' (per visit basis)':'')+'</span><span>'+money(total)+'</span></div>';
+  if(internal&&$('minOverride').checked)h+='<div class="p-note"><b>Minimum override active.</b> Reason: '+($('minReason').value||'not stated')+'</div>';
+  h+='<div class="p-note">'+(internal
+    ?'Internal document. Rate factors match the Bid Calculator: 15% burden, 4% incidentals, 8% crew margin (divide basis). Pass-throughs at cost. Prepared by '+($('prepBy').value||S.user||'')+'.'
+    :'City Wide Facility Solutions manages your complete scope of work with commercial-grade equipment, documented wash water compliance, and photographic quality records on every visit. GoCityWide.com')+'</div>';
+  $('printArea').innerHTML=h;
+  window.print();
+}
+function copyQuote(){
+  const raw=activeResults(); const {results}=applyMinimums(raw);
+  if(!results.length){alert('Turn on at least one service first.');return;}
+  const region=REGIONS[$('region').value];
+  let t='PRESSURE WASHING QUOTE | '+($('acct').value||'')+' | '+region.label+'\n';
+  results.forEach(r=>{const unitTxt=r.isUnit?(r.sf+' '+r.s.unit):(r.sf.toLocaleString()+' SF');t+='\n'+r.s.name+' | '+unitTxt+'\n  '+money(r.finalPrice)+(r.events>1?' per visit, '+r.events+'x/yr = '+money(r.finalPrice*r.events)+'/yr':'')+'\n';});
+  t+='\nTOTAL: '+money(results.reduce((a,r)=>a+r.finalPrice,0));
+  navigator.clipboard.writeText(t).then(()=>alert('Quote text copied.'));
+}
+
+/* ---------- SAVED WORK (local + cloud) ---------- */
+function snapshot(){return {acct:$('acct').value,qdate:$('qdate').value,prepBy:$('prepBy').value,region:$('region').value,chemProvider:$('chemProvider').value,ovMargin:$('ovMargin').value,minOverride:$('minOverride').checked,minReason:$('minReason').value,svcOn:S.svcOn,inputs:S.inputs};}
+function applySnapshot(p){
+  $('acct').value=p.acct||'';$('qdate').value=p.qdate||'';$('prepBy').value=p.prepBy||'';
+  $('region').value=p.region||'lv';$('chemProvider').value=p.chemProvider||'vendor';
+  $('ovMargin').value=p.ovMargin||'';$('minOverride').checked=!!p.minOverride;$('minReason').value=p.minReason||'';
+  S.svcOn=p.svcOn||{};S.inputs=p.inputs||{};recalc();
+}
+let saveTimer=null;
+function autosaveSoon(){clearTimeout(saveTimer);saveTimer=setTimeout(()=>localSave(false),1200);}
+function localSave(announce){
+  localStorage.setItem('cwpw_current',JSON.stringify({ts:Date.now(),payload:snapshot()}));
+  if(announce)alert('Saved locally.');
+}
+function saveWork(manual){
+  localSave(false);
+  if(!S.user){changeUser();if(!S.user)return;}
+  const id='pw_'+Date.now();
+  const rec={kind:'pressure_save',id,user:S.user,name:$('acct').value||'Untitled quote',ts:new Date().toISOString(),payload:snapshot()};
+  fetch(ENDPOINT,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify(rec)})
+   .then(r=>r.json()).then(j=>{if(manual)alert(j&&j.ok?'Saved to the cloud as "'+rec.name+'".':'Cloud save may not have landed. Your work is saved in this browser either way.');})
+   .catch(()=>{if(manual)alert('Cloud save unavailable. Your work is saved in this browser.');});
+}
+function openSaves(){
+  $('saveModal').classList.add('open');
+  $('saveList').innerHTML='<div style="font-size:12px;color:var(--cw-grey)">Loading...</div>';
+  const local=localStorage.getItem('cwpw_current');
+  let html='';
+  if(local){const l=JSON.parse(local);html+=saveRowHtml({id:'local',name:(l.payload.acct||'Current work')+' (this browser)',ts:new Date(l.ts).toLocaleString()},true);}
+  if(!S.user){$('saveList').innerHTML=html+'<div style="font-size:12px;color:var(--cw-grey);padding:8px 0">Set your name to load cloud saves.</div>';return;}
+  fetch(ENDPOINT+'?pressure='+encodeURIComponent(S.user)).then(r=>r.json()).then(j=>{
+    const items=(j&&j.items)||[];
+    $('saveList').innerHTML=html+(items.length?items.map(it=>saveRowHtml(it,false)).join(''):'<div style="font-size:12px;color:var(--cw-grey);padding:8px 0">No cloud saves yet for '+S.user+'.</div>');
+    window.__cloudSaves=items;
+  }).catch(()=>{$('saveList').innerHTML=html+'<div style="font-size:12px;color:var(--cw-grey);padding:8px 0">Cloud list unavailable right now.</div>';});
+}
+function saveRowHtml(it,isLocal){
+  return '<div class="saverow"><div class="meta"><b>'+(it.name||it.id)+'</b><span>'+(it.ts||'')+'</span></div>'
+  +'<button onclick="loadWork(\''+it.id+'\','+isLocal+')">Load</button>'
+  +(isLocal?'':'<button class="del" onclick="delWork(\''+it.id+'\')">Delete</button>')+'</div>';
+}
+function loadWork(id,isLocal){
+  if(isLocal){const l=JSON.parse(localStorage.getItem('cwpw_current'));applySnapshot(l.payload);closeSaves();return;}
+  const it=(window.__cloudSaves||[]).find(x=>x.id===id);
+  if(it&&it.payload){applySnapshot(typeof it.payload==='string'?JSON.parse(it.payload):it.payload);closeSaves();}
+}
+function delWork(id){
+  if(!confirm('Delete this cloud save?'))return;
+  fetch(ENDPOINT,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify({kind:'pressure_save',id,del:true,user:S.user})}).then(()=>openSaves()).catch(()=>openSaves());
+}
+function closeSaves(){$('saveModal').classList.remove('open')}
+function changeUser(){
+  const n=prompt('Your name (used to store your saved work):',S.user||'');
+  if(n!==null){S.user=n.trim();localStorage.setItem('cwpw_user',S.user);$('userBtn').textContent=S.user||'Set Your Name';}
+}
+
+/* ---------- INIT ---------- */
+(function init(){
+  $('qdate').value=new Date().toISOString().slice(0,10);
+  if(S.user)$('userBtn').textContent=S.user;
+  const cur=localStorage.getItem('cwpw_current');
+  if(cur){try{applySnapshot(JSON.parse(cur).payload);}catch(e){recalc();}}else{recalc();}
+})();
+
+</script>
 </body>
 </html>
