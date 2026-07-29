@@ -189,7 +189,7 @@ body{
       <div class="cfield"><label>Chemicals Provided By</label>
         <select id="chemProvider" onchange="recalc()">
           <option value="vendor">Crew Provides (their cost + 15%)</option>
-          <option value="cw">City Wide (tolled at our cost)</option>
+          <option value="cw">City Wide Supplies</option>
         </select>
       </div>
       <div class="cfield"><label>Override Margin % (blank = auto by job size)</label>
@@ -417,9 +417,9 @@ function priceService(s){
   const margin=(!isNaN(svcOv)&&svcOv>0)?svcOv:(!isNaN(ov)&&ov>0)?ov:(isUnit?36:autoMargin(qty));
   let price=totalCost/(1-margin/100)*region.mult;
   const unitFloor=isUnit?s.floorUnit:s.floorRate;
-  if(unitFloor)price=Math.max(price, qty*unitFloor*region.mult+flatCost/(1-margin/100));
+  if(unitFloor)price=Math.max(price, qty*unitFloor*region.mult+(inhouse?flatCost:flatCost/(1-IC_MARGIN))/(1-margin/100));
   const rateOv=parseFloat(st.rateOv);
-  if(!isNaN(rateOv)&&rateOv>0)price=qty*rateOv+flatCost/(1-margin/100);
+  if(!isNaN(rateOv)&&rateOv>0)price=qty*rateOv+(inhouse?flatCost:flatCost/(1-IC_MARGIN))/(1-margin/100);
 
   const mktArr=isUnit?s.mktUnit:s.mkt;
   const mktLow=mktArr[0]*region.mult, mktHigh=mktArr[1]*region.mult;
@@ -459,7 +459,7 @@ function renderServices(){
       +'<div class="field"><label>Visits / Year</label><select onchange="setSvc(\''+s.id+'\',\'events\',this.value)">'+FREQS.map(f=>'<option value="'+f[0]+'"'+((parseFloat(st.events)||s.freqDefault||1)===f[0]?' selected':'')+'>'+f[1]+'</option>').join('')+'</select></div>'
       +'<div class="field"><label>Tech Wage $/hr</label><input type="number" step="0.5" value="'+(st.wage||'')+'" placeholder="'+REGIONS[$('region').value].wage.toFixed(2)+'" onchange="setSvc(\''+s.id+'\',\'wage\',this.value)"></div>'
       +'<div class="field"><label>Equipment $/hr</label><input type="number" step="1" value="'+(st.equip||'')+'" placeholder="'+s.equip+'" onchange="setSvc(\''+s.id+'\',\'equip\',this.value)"><small>'+(s.equip>=20?'Hot water rig: machine, fuel, burner diesel, hoses.':'Cold rig, surface cleaner, wear.')+'</small></div>'
-      +'<div class="field"><label>Flat Pass-Through $ (reclaim rig, hydrant meter, trip)</label><input type="number" step="10" value="'+(('flat' in st)?st.flat:'')+'" placeholder="'+(s.flatCost||0)+'" onchange="setSvc(\''+s.id+'\',\'flat\',this.value)"><small>Billed at cost into the build-up. Margin applies to work, not rentals.</small></div>'
+      +'<div class="field"><label>Flat Pass-Through $ (reclaim rig, hydrant meter, trip)</label><input type="number" step="10" value="'+(('flat' in st)?st.flat:'')+'" placeholder="'+(s.flatCost||0)+'" onchange="setSvc(\''+s.id+'\',\'flat\',this.value)"><small>Enter what it costs us. The tool prices margin on this line like everything else.</small></div>'
       +'<div class="field"><label>'+(s.unit?'Price per '+s.unit.replace(/s$/,'')+' Override':'Rate/SF Override')+'</label><input type="number" step="0.01" value="'+(st.rateOv||'')+'" placeholder="auto build-up" onchange="setSvc(\''+s.id+'\',\'rateOv\',this.value)"></div>'
       +'<div class="field"><label>Service Margin % Override</label><input type="number" value="'+(st.margin||'')+'" placeholder="auto '+(s.unit?36:(st.sf?autoMargin(parseFloat(st.sf)||0):'32-40'))+'" onchange="setSvc(\''+s.id+'\',\'margin\',this.value)"></div>'
       +'</div>';
@@ -471,7 +471,7 @@ function renderServices(){
         +'<div class="bl"><span>Incidentals &amp; unlisted supplies ('+(INCIDENTALS*100)+'% of labor)</span><b>'+money(r.incCost)+'</b></div>'
         +r.chems.map(c=>'<div class="bl"><span>'+c.label+' ('+money2(c.perUnit)+uw+')</span><b>'+money(c.cost)+'</b></div>').join('')
         +'<div class="bl"><span>Equipment fee ('+r.clockHrs.toFixed(1)+' hrs @ $'+((st.equip)||s.equip)+'/hr)</span><b>'+money(r.equipCost)+'</b></div>'
-        +(r.flatCost?'<div class="bl"><span>Reclaim / meter / trip pass-through</span><b>'+money(r.flatCost)+'</b></div>':'')
+        +(r.flatCost?'<div class="bl"><span>Reclaim / meter / trip costs (margin applies)</span><b>'+money(r.flatCost)+'</b></div>':'')
         +(r.inhouse?'':'<div class="bl"><span>Crew company margin ('+(IC_MARGIN*100).toFixed(0)+'% of their check, Bid Calculator math)</span><b>'+money(r.vendorCost-r.vendorBase)+'</b></div>')
         +'<div class="bl tot"><span>'+(r.inhouse?'In-house crew cost':'We pay the crew')+(r.cwChems?' (City Wide supplies chemicals: '+money(r.cwChems)+')':'')+'</span><b>'+money(r.vendorCost)+'</b></div>'
         +'<div class="bl tot" style="color:var(--cw-red)"><span>Client price @ '+r.margin+'% margin x '+REGIONS[$('region').value].mult.toFixed(2)+' regional</span><b>'+money(r.price)+' ('+money2(r.perSF)+uw+(r.flatCost?' + pass-through':'')+')</b></div>'
@@ -520,7 +520,7 @@ function renderShopping(results){
     });
     if(r.flatCost){
       const k='Reclaim / meter / trip ('+r.s.name+')';
-      agg[k]={prod:k,packLabel:'pass-through at cost',packPrice:r.flatCost,cost:r.flatCost};
+      agg[k]={prod:k,packLabel:'cost line (margin applies)',packPrice:r.flatCost,cost:r.flatCost};
     }
   });
   const items=Object.values(agg);
@@ -603,7 +603,7 @@ function renderProcess(){
   +'<ol><li><b>Walk it and measure it.</b> Flatwork SF, wall SF, pad count, gum spots, stains, tags. Photograph everything, especially grease and existing damage.</li>'
   +'<li><b>Sort hot from cold.</b> Any grease, gum, oil, or food service = hot water service at hot water rates. Do not let a cold-only vendor talk the scope down to their equipment.</li>'
   +'<li><b>Answer the water question before pricing.</b> Where does the wash water go on THIS property? Storm drain rules decide whether reclaim gear is on the job, and reclaim changes the price. In Reno it is on almost every dirty job by default.</li>'
-  +'<li><b>Put hard costs in the flat pass-through.</b> Reclaim rig mobilization, hydrant meter, TRIC trip charges: at cost, no margin on rentals, same as the lift logic in the window tool.</li>'
+  +'<li><b>Put hard costs in the flat pass-through box.</b> Reclaim rig mobilization, hydrant meter, TRIC trip charges: enter our cost and the tool prices margin on it like everything else.</li>'
   +'<li><b>Structure the program.</b> First clean at restoration rates (about double), then monthly or quarterly maintenance at program rates. Show the monthly accrual. Recurring concrete at $0.08-0.15/SF beats fighting over one-time jobs.</li>'
   +'<li><b>Apply the minimum and read the market flag.</b> $250 visit minimum ($125 program visits, $250 graffiti, $150 rust). Below-market flags mean hold the price, not cut it.</li></ol>'
   +'<h2>Outsourcing: Picking the Right Pressure Washing Vendor</h2>'
@@ -661,7 +661,7 @@ function renderRates(){
   +'<tr><td>Crew company margin</td><td>'+(IC_MARGIN*100)+'%</td><td>Margin basis, cost divided by 0.92: the crew keeps 8% of their check, exactly like the Bid Calculator IC margin line.</td></tr>'
   +'<tr><td>City Wide margin</td><td>32-40%</td><td>Auto by job size, divide basis. Override with a reason.</td></tr>'
   +'<tr><td>Minimums</td><td>$250 visit ($125 program visits, $250 graffiti, $150 rust)</td><td>Lead service only on multi-service visits.</td></tr>'
-  +'<tr><td>Pass-throughs</td><td>At cost</td><td>Reclaim rigs, hydrant meters, trip charges: no margin on rentals.</td></tr>'
+  +'<tr><td>Pass-through costs</td><td>Margin applies</td><td>Reclaim rigs, hydrant meters and trip charges enter at our cost and price through the same chain as labor.</td></tr>'
   +'<tr><td>Crew-provided chemical markup</td><td>'+(VENDOR_CHEM_MARKUP*100)+'%</td><td>Their procurement cost.</td></tr></table>';
 }
 function setChem(k,v){CHEMS[k].perUnit=parseFloat(v)||CHEMS[k].perUnit;
@@ -694,7 +694,7 @@ function printQuote(internal){
       +'<tr><td>Incidentals ('+(INCIDENTALS*100)+'% of labor)</td><td>'+money(r.incCost)+'</td></tr>'
       +r.chems.map(c=>'<tr><td>'+c.label+'</td><td>'+money(c.cost)+'</td></tr>').join('')
       +'<tr><td>Equipment fee</td><td>'+money(r.equipCost)+'</td></tr>'
-      +(r.flatCost?'<tr><td>Reclaim / meter / trip pass-through</td><td>'+money(r.flatCost)+'</td></tr>':'')
+      +(r.flatCost?'<tr><td>Reclaim / meter / trip costs (margin applies)</td><td>'+money(r.flatCost)+'</td></tr>':'')
       +'<tr><td><b>Crew company total (8% margin basis, Bid Calculator math)</b></td><td><b>'+money(r.vendorCost)+'</b></td></tr>'
       +(r.cwChems?'<tr><td>City Wide supplied chemicals</td><td>'+money(r.cwChems)+'</td></tr>':'')
       +'<tr><td><b>Margin '+r.margin+'% | Regional x'+region.mult.toFixed(2)+' | '+money2(r.perSF)+(r.isUnit?'/'+r.s.unit.replace(/s$/,''):'/SF')+' (market '+money2(r.mktLow)+'-'+money2(r.mktHigh)+')</b></td><td><b>'+money(r.finalPrice)+'</b></td></tr></table>';
@@ -704,7 +704,7 @@ function printQuote(internal){
   h+='<div class="p-total"><span>Total Investment'+(results.some(r=>r.events>1)?' (per visit basis)':'')+'</span><span>'+money(total)+'</span></div>';
   if(internal&&$('minOverride').checked)h+='<div class="p-note"><b>Minimum override active.</b> Reason: '+($('minReason').value||'not stated')+'</div>';
   h+='<div class="p-note">'+(internal
-    ?'Internal document. Rate factors match the Bid Calculator: 15% burden, 4% incidentals, 8% crew margin (divide basis). Pass-throughs at cost. Prepared by '+($('prepBy').value||S.user||'')+'.'
+    ?'Internal document. Rate factors match the Bid Calculator: 15% burden, 4% incidentals, 8% crew margin (divide basis), City Wide margin on every cost line. Prepared by '+($('prepBy').value||S.user||'')+'.'
     :'City Wide Facility Solutions manages your complete scope of work with commercial-grade equipment, documented wash water compliance, and photographic quality records on every visit. GoCityWide.com')+'</div>';
   $('printArea').innerHTML=h;
   window.print();
